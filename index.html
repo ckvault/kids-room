@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hero Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@600;800;900&family=Noto+Sans+TC:wght@400;700&display=swap">
+<style>
+/* Layout: sticker-book app. Header nav, a persistent video stage, then one task card at a time. Single column on phones. */
+:root{
+  --bg:#EEF4FA; --card:#FFFFFF; --ink:#1B2340; --muted:#5A6587; --line:#1B2340; --shadow:#1B2340;
+  --sun:#FFC93C; --mint:#2EC4A0; --berry:#FF5C7A; --sky:#4D9DFF; --soft:#DCE7F3; --hl:#FFE48A;
+  --on-sun:#1B2340; --on-mint:#06281F;
+  --s0:#DCE7F3; --s1:#9CC7FF; --s2:#6FD3BA; --s3:#FFC93C; --s4:#FF8FA6;
+  --f-display:"Baloo 2",ui-rounded,system-ui,sans-serif;
+  --f-body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-zh:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --r:20px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10162A; --card:#1B2442; --ink:#EEF2FF; --muted:#A7B1D3; --line:#05080F; --shadow:#05080F;
+  --sun:#FFCF52; --mint:#3ED6B1; --berry:#FF7690; --sky:#6AAEFF; --soft:#26305A; --hl:#6B5A12;
+  --s0:#26305A; --s1:#3D6DB3; --s2:#2A9C82; --s3:#C99A1F; --s4:#C2546B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10162A; --card:#1B2442; --ink:#EEF2FF; --muted:#A7B1D3; --line:#05080F; --shadow:#05080F;
+  --sun:#FFCF52; --mint:#3ED6B1; --berry:#FF7690; --sky:#6AAEFF; --soft:#26305A; --hl:#6B5A12;
+  --s0:#26305A; --s1:#3D6DB3; --s2:#2A9C82; --s3:#C99A1F; --s4:#C2546B; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.45;-webkit-tap-highlight-color:transparent;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+[hidden]{display:none!important}
+img{max-width:100%}
+.wrap{max-width:1000px;margin:0 auto;padding-inline:16px;padding-block:14px 56px;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.05;margin:0;text-wrap:balance}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
+.zh{font-family:var(--f-zh);color:var(--muted);font-size:14px;font-weight:400}
+.words{font-family:var(--f-display);font-weight:800;color:var(--muted);font-size:18px}
+
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:10px;align-items:center}
+.logo{width:48px;height:48px;border-radius:15px;background:var(--sun);color:var(--on-sun);border:3px solid var(--line);box-shadow:3px 3px 0 var(--shadow);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:22px;transform:rotate(-4deg)}
+.brand h1{font-size:30px;font-weight:800}
+.nav{display:flex;gap:8px;flex-wrap:wrap}
+.navb{display:flex;align-items:center;gap:6px;padding:6px 14px;min-height:48px;border-radius:15px;background:var(--card);border:3px solid var(--line);box-shadow:3px 3px 0 var(--shadow);font-family:var(--f-display);font-weight:800;font-size:17px}
+.navb[aria-current="true"]{background:var(--sun);color:var(--on-sun);transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow)}
+.navb.on{background:var(--mint);color:var(--on-mint)}
+.badge{background:var(--berry);color:#fff;border-radius:999px;padding:0 8px;font-size:14px}
+
+.sticker{background:var(--card);border:3px solid var(--line);border-radius:var(--r);box-shadow:4px 4px 0 var(--shadow)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:8px 20px;border-radius:16px;border:3px solid var(--line);background:var(--card);box-shadow:3px 3px 0 var(--shadow);font-family:var(--f-display);font-weight:800;font-size:19px;text-decoration:none;color:var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow)}
+.btn.sun{background:var(--sun);color:var(--on-sun)} .btn.mint{background:var(--mint);color:var(--on-mint)}
+.btn.berry{background:var(--berry);color:#fff} .btn.sky{background:var(--sky);color:#fff}
+.btn.sm{min-height:44px;padding:4px 14px;font-size:17px}
+.btn.icon{min-width:52px;padding:4px 10px;font-size:24px}
+.btn.big{min-height:70px;font-size:24px;padding:10px 28px}
+.btn[disabled]{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.center{justify-content:center}
+.lead{display:flex;flex-direction:column;gap:4px}
+.lead h2{font-size:30px;font-weight:800}
+.note{margin:0;color:var(--muted);font-size:15px}
+.eyebrow{font-family:var(--f-display);font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.panel{display:flex;flex-direction:column;gap:16px}
+
+/* player */
+.stage{padding:12px;display:flex;flex-direction:column;gap:10px}
+.pbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.pbar h2{font-size:24px}
+.vid{position:relative;width:100%;max-width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:3px solid var(--line);background:#000}
+.vid iframe,.vid #ytplayer{position:absolute;inset:0;width:100%;height:100%}
+.pctl{display:flex;flex-wrap:wrap;gap:8px}
+.btn.toggle.on{background:var(--mint);color:var(--on-mint)}
+
+/* task card */
+.task{padding:18px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center}
+.task h3{font-size:26px}
+.bigem{font-size:84px;line-height:1}
+.move{display:flex;gap:12px;align-items:center;padding:10px 16px;border-radius:16px;background:var(--soft);border:2px solid var(--line);font-weight:800;text-align:left}
+.move .em{font-size:40px}
+.dots{display:flex;gap:8px;justify-content:center}
+.dots i{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);background:var(--soft)}
+.dots i.on{background:var(--mint)}
+.choices{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+.pic{width:120px;height:120px;max-width:100%;display:grid;place-items:center;font-size:62px;border-radius:22px}
+.pic.right{background:var(--mint)}
+.pic.wrong{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.frame{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,6vw,40px);line-height:1.2;display:flex;flex-wrap:wrap;gap:.25em;justify-content:center;align-items:center}
+.blank{display:inline-flex;align-items:center;gap:6px;min-width:2.4em;justify-content:center;border-bottom:5px solid var(--sky);padding:0 6px}
+.blank.filled{background:var(--hl);border-radius:10px 10px 0 0}
+.rate{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%}
+.rate button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:16px;border:3px solid var(--line);background:var(--card);box-shadow:3px 3px 0 var(--shadow);font-weight:800;font-size:13px;line-height:1.1}
+.rate button span{font-size:30px}
+@media (max-width:560px){.rate{grid-template-columns:repeat(3,1fr)}}
+.ava{display:inline-block}
+.talking{animation:talk .35s ease-in-out infinite alternate}
+@keyframes talk{from{transform:scale(1) rotate(-4deg)}to{transform:scale(1.12) rotate(4deg)}}
+
+/* lists */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.scene{display:flex;flex-direction:column;gap:6px;padding:14px;text-align:left;position:relative}
+.scene .em{font-size:40px;line-height:1}
+.scene h3{font-size:21px}
+.scene .done{position:absolute;top:-10px;right:-8px;width:30px;height:30px;border-radius:50%;background:var(--mint);color:var(--on-mint);border:2px solid var(--line);display:grid;place-items:center;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:38px;padding:0 6px;border-radius:12px;border:2px solid var(--line);font-size:20px}
+.st0{background:var(--s0)} .st1{background:var(--s1)} .st2{background:var(--s2)} .st3{background:var(--s3)} .st4{background:var(--s4)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;font-weight:800;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{width:16px;height:16px;border-radius:5px;border:2px solid var(--line)}
+.module{display:flex;flex-direction:column;gap:10px;padding:16px}
+.module h3{font-size:24px}
+.ptiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.ptile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border-radius:16px;border:3px solid var(--line);font-size:13px;font-weight:800;min-height:96px;justify-content:center}
+.ptile .em{font-size:36px}
+.ptile .lv{font-size:12px;opacity:.8}
+.home{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px}
+.home .em{font-size:40px}
+.home b{font-family:var(--f-display);font-size:22px}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:center;font-weight:800;font-size:15px}
+.bar .track{display:flex;height:22px;border-radius:8px;overflow:hidden;border:2px solid var(--line);background:var(--s0)}
+.bar .track i{display:block;height:100%}
+@media (max-width:480px){.bar{grid-template-columns:1fr}}
+
+.form{padding:20px;display:flex;flex-direction:column;gap:14px}
+.form label{font-weight:800}
+.form input,.form textarea,.form select{width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg)}
+.form textarea{min-height:140px;resize:vertical;font-size:14px}
+.switch{display:flex;align-items:center;gap:10px;font-weight:800}
+.switch input{width:24px;height:24px}
+ol.how{margin:0;padding-left:22px;font-size:15px;display:flex;flex-direction:column;gap:4px}
+.status{margin:0;min-height:1.4em;font-size:15px}
+.status.err{color:var(--berry);font-weight:800}
+.warn{padding:14px 16px;border-color:var(--berry)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:14px;font-weight:800;transition:.25s;z-index:20;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.burst{position:fixed;inset:0;pointer-events:none;display:grid;place-items:center;font-size:130px;z-index:15;opacity:0}
+.burst.go{animation:pop 1s ease-out}
+@keyframes pop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.4)}}
+@media (prefers-reduced-motion:reduce){.talking,.pic.wrong,.burst.go{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="logo" aria-hidden="true">Hi</div><h1>Hero Words</h1></div>
+    <nav class="nav" aria-label="Main">
+      <button class="navb" data-nav="today">🏠 Today</button>
+      <button class="navb" data-nav="shows">🎬 Shows</button>
+      <button class="navb" data-nav="phrases">🧩 Phrases</button>
+      <button class="navb" data-nav="review">🔁 Review <span class="badge" id="dueBadge" hidden>0</span></button>
+      <button class="navb" data-nav="grown">⚙️</button>
+      <button class="navb" id="wordsBtn" aria-pressed="false" title="Show words (for grown-ups)">👁 Words</button>
+    </nav>
+  </header>
+  <section id="stage" class="sticker stage" hidden>
+    <div class="pbar"><button class="btn sm" id="pBack">← Back</button><h2 id="pTitle"></h2></div>
+    <div class="vid"><div id="ytplayer"></div></div>
+    <div class="pctl">
+      <button class="btn sm icon" id="pPause" aria-label="Play or pause">⏸</button>
+      <button class="btn sm" id="pAgain">🔁 Again</button>
+      <button class="btn sm toggle" id="pSlow">🐢 Slow</button>
+    </div>
+    <p class="note" id="ytNote"></p>
+  </section>
+  <main id="view" class="panel" aria-live="polite"></main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<div class="burst" id="burst" aria-hidden="true">🌟</div>
+
+<script>
+/* ================= curriculum ================= */
+const MODULES=[
+  {id:"needs",title:"I Need",emoji:"🙋",zh:"表達需求"},
+  {id:"play",title:"Play Together",emoji:"🤝",zh:"社交合作"},
+  {id:"feel",title:"Feelings",emoji:"😊",zh:"表達感受"},
+  {id:"fix",title:"Fix Problems",emoji:"🛠️",zh:"解決衝突"},
+  {id:"ask",title:"Ask & Care",emoji:"❓",zh:"提問與關心"}
+];
+const STATES=[
+  {k:0,icon:"🙈",label:"Not yet",zh:"還聽不懂"},
+  {k:1,icon:"👂",label:"Understood",zh:"聽得懂"},
+  {k:2,icon:"🦜",label:"Copied me",zh:"能模仿"},
+  {k:3,icon:"🔁",label:"Swapped words",zh:"能換字"},
+  {k:4,icon:"🌟",label:"Said it alone",zh:"能獨立說"}
+];
+const P4=[{w:"Mommy",e:"👩"},{w:"Daddy",e:"👨"},{w:"Spidey",e:"🕷️"},{w:"Grandma",e:"👵"}];
+const V1="t4pZwMW-FEw";
+const PACK={
+ chunks:[
+  {id:"want-to",m:"needs",lv:1,en:"I want to ___!",ex:"I want to play!",zh:"我想要…！",emoji:"🙋",move:["👉","Point to yourself, then reach out"],home:"Before playing: “I want to play blocks!”",sit:[{q:"You see a playground. What do you say?",e:"🛝"}],frame:{t:"I want to ___!",o:[{w:"splash",e:"🌊"},{w:"play",e:"⚽"},{w:"swim",e:"🏊"},{w:"go outside",e:"🌳"}]}},
+  {id:"need-please",m:"needs",lv:1,en:"I need ___, please.",ex:"I need some water, please.",zh:"請給我…",emoji:"🙏",move:["🙏","Hands together"],home:"At dinner: “I need some water, please.”",sit:[{q:"You are thirsty. What do you say?",e:"🥤"}],frame:{t:"I need ___, please.",o:[{w:"some water",e:"💧"},{w:"help",e:"🙋"},{w:"a hug",e:"🤗"},{w:"a tissue",e:"🤧"}]}},
+  {id:"im-stuck",m:"needs",lv:1,en:"I'm stuck!",zh:"我卡住了！",emoji:"😣",move:["🤲","Hands stuck together, wiggle"],home:"When a sleeve or zipper gets stuck.",sit:[{q:"Your shirt is stuck on your head! What do you say?",e:"👕"}],extra:[{v:V1,s:685.82,e:689.09,who:"Rhino",text:"I'm-I'm-I'm s-s-stuck!"}]},
+  {id:"check-it-out",m:"play",lv:1,en:"Check it out!",zh:"你看！",emoji:"👀",move:["👀","Point and open your eyes wide"],home:"Showing a drawing or a block tower.",sit:[{q:"You built a big tower! What do you say to Mommy?",e:"🏰"}]},
+  {id:"lets-play",m:"play",lv:1,en:"Let's play!",zh:"一起玩吧！",emoji:"⚽",move:["👋","Wave “come here”"],home:"Inviting Daddy to play.",sit:[{q:"Your friend is sitting alone. What do you say?",e:"🧒"}],frame:{t:"Let's ___!",o:[{w:"play",e:"⚽"},{w:"dance",e:"💃"},{w:"build",e:"🧱"},{w:"read",e:"📚"}]}},
+  {id:"here-you-go",m:"play",lv:1,en:"Here you go.",zh:"給你。",emoji:"🎁",move:["🤲","Hold something out"],home:"Handing a cup or a toy to family.",sit:[{q:"Mommy wants the book. You give it to her. What do you say?",e:"📘"}],frame:{t:"Here you go, ___.",o:P4}},
+  {id:"thank-you",m:"play",lv:1,en:"Thank you!",zh:"謝謝！",emoji:"🙏",move:["🫡","Hand from chin, forward"],home:"Every time someone gives you something.",sit:[{q:"Grandma gives you a cookie. What do you say?",e:"🍪"}],frame:{t:"Thank you, ___!",o:P4}},
+  {id:"youre-welcome",m:"play",lv:1,en:"You're welcome.",zh:"不客氣。",emoji:"😊",move:["🫴","Open palm and smile"],home:"When someone says “Thank you!”",sit:[{q:"Daddy says “Thank you!” What do you say?",e:"👨"}]},
+  {id:"together",m:"play",lv:1,en:"Together!",zh:"一起！",emoji:"🙌",move:["🙌","High five"],home:"Cleaning up toys: “Together?” “Together!”",sit:[{q:"Daddy asks, “Together?” What do you say?",e:"🙌"}]},
+  {id:"we-can-do-this",m:"play",lv:1,en:"We can do this!",zh:"我們做得到！",emoji:"💪",move:["✊","Fist up"],home:"Before a hard puzzle or a big climb.",sit:[{q:"The puzzle is hard. What do you say?",e:"🧩"}]},
+  {id:"its-hot",m:"feel",lv:1,en:"It's hot!",zh:"好熱！",emoji:"🥵",move:["🥵","Fan your face"],home:"Hot weather or warm soup.",sit:[{q:"You touch warm soup. What do you say?",e:"🍲"}],frame:{t:"It's ___!",o:[{w:"hot",e:"🥵"},{w:"cold",e:"🥶"},{w:"yummy",e:"😋"},{w:"big",e:"🐘"}]}},
+  {id:"so-cold",m:"feel",lv:1,en:"So cold!",zh:"好冰！",emoji:"🥶",move:["🥶","Hug yourself and shiver"],home:"Eating ice cream, air conditioning.",sit:[{q:"You eat a popsicle. What do you say?",e:"🍦"}]},
+  {id:"ew-gross",m:"feel",lv:1,en:"Ew, gross!",zh:"噁，好髒！",emoji:"🤢",move:["🤢","Pinch your nose"],home:"Seeing something dirty or yucky.",sit:[{q:"The dog's toy is wet and dirty! What do you say?",e:"🐶"}]},
+  {id:"feels-good",m:"feel",lv:1,en:"That feels good.",zh:"好舒服。",emoji:"😌",move:["😌","Rub your tummy and smile"],home:"Warm bath, back rub.",sit:[{q:"Mommy gives you a back rub. What do you say?",e:"💆"}],extra:[{v:V1,s:679.35,e:681.51,who:"Rhino",text:"Oh, thanks. That feels good."}]},
+  {id:"oh-no",m:"feel",lv:1,en:"Oh, no!",zh:"喔不！",emoji:"😱",move:["😱","Hands on your cheeks"],home:"When something falls or breaks.",sit:[{q:"Your ice cream falls on the floor! What do you say?",e:"🍦"}]},
+  {id:"give-back",m:"fix",lv:1,en:"Hey, give that back!",zh:"嘿，還給我！",emoji:"✋",move:["✋","Open hand, reach out"],home:"When someone takes your toy.",sit:[{q:"Your brother takes your car! What do you say?",e:"🚗"}]},
+  {id:"sorry-help",m:"fix",lv:1,en:"Sorry! Let me help.",zh:"對不起！我來幫忙。",emoji:"🤝",move:["🤚","Hand on your heart, then reach out"],home:"After knocking something over.",sit:[{q:"You knock over Daddy's cup. What do you say?",e:"🥤"}]},
+  {id:"you-go-first",m:"fix",lv:1,en:"You go first.",zh:"你先。",emoji:"🫲",move:["🫲","Palm toward the other person"],home:"Lining up, board games, the slide.",sit:[{q:"You and your friend both want the slide. What do you say?",e:"🛝"}],frame:{t:"You go first, ___.",o:P4}},
+  {id:"now-you",m:"fix",lv:1,en:"Now you!",zh:"換你！",emoji:"👉",move:["👉","Point to the other person"],home:"Taking turns with a ball or a game.",sit:[{q:"You finished your turn with the ball. What do you say?",e:"⚽"}]},
+  {id:"take-turns",m:"fix",lv:1,en:"Let's take turns.",zh:"我們輪流吧。",emoji:"🔄",move:["👉","Point to them, then to you"],home:"Sharing the iPad or a toy.",sit:[{q:"You both want the iPad. What do you say?",e:"📱"}]},
+  {id:"look-out",m:"fix",lv:1,en:"Look out!",zh:"小心！",emoji:"⚠️",move:["✋","Arm out: stop!"],home:"Playing ball: warn each other.",sit:[{q:"A ball is flying at Daddy! What do you say?",e:"⚽"}],frame:{t:"Look out, ___!",o:P4}},
+  {id:"got-ya",m:"fix",lv:1,en:"I got ya!",zh:"我接住你了！",emoji:"🫴",move:["🫴","Catch with both arms"],home:"Catching a ball or a jump into your arms.",sit:[{q:"Your little cousin almost falls. You catch her. What do you say?",e:"🧒"}]},
+  {id:"whats-this",m:"ask",lv:1,en:"What's this?",zh:"這是什麼？",emoji:"🤔",move:["🤔","Point and tilt your head"],home:"Finding something new on a walk.",sit:[{q:"You find a strange bug in the garden. What do you ask?",e:"🐛"}]},
+  {id:"are-you-okay",m:"ask",lv:1,en:"Are you okay?",zh:"你還好嗎？",emoji:"🤗",move:["🤗","Gentle hand on a shoulder"],home:"When someone falls or looks sad.",sit:[{q:"Your friend falls down. What do you say?",e:"🤕"}]}
+ ],
+ episodes:[{id:V1,videoId:V1,title:"Freeze! It's Team Spidey",scenes:[
+  {id:"s1",title:"Hot Day",emoji:"☀️",start:63.8,end:83.2,stops:[{at:83.05,check:{q:"Where are they going?",o:[["🏊","the pool"],["🏫","school"],["🛒","the store"]],a:0},lines:[{c:"want-to",s:81.35,e:83.02,who:"Kid",text:"I want to splash!"}]}]},
+  {id:"s2",title:"Brain Freeze",emoji:"🍦",start:175.6,end:212.3,stops:[
+    {at:190.25,check:{q:"Is the ice cream hot or cold?",o:[["🔥","hot"],["🧊","cold"]],a:1},lines:[{c:"so-cold",s:187.52,e:190.22,who:"Rhino",text:"Oh, so cold. So cold!"}]},
+    {at:212.1,check:{q:"How does Rhino feel?",o:[["🥵","hot"],["🥶","cold"]],a:0},lines:[{c:"its-hot",s:210.78,e:212.08,who:"Rhino",text:"It's hot!"}]}]},
+  {id:"s3",title:"Check It Out!",emoji:"🧪",start:284.5,end:293.7,stops:[
+    {at:288.15,lines:[{c:"check-it-out",s:287.05,e:288.12,who:"Spidey",text:"Check it out!"}]},
+    {at:293.62,check:{q:"What does he need?",o:[["💧","water"],["🍕","pizza"],["🧸","a teddy bear"]],a:0},lines:[{c:"need-please",s:291.16,e:293.59,who:"Spidey",text:"TRACE-E, I need some water, please."}]}]},
+  {id:"s4",title:"Ew, Gross!",emoji:"🤢",start:322.9,end:333.0,stops:[{at:332.85,check:{q:"Is Rhino eating nicely?",o:[["👍","yes"],["👎","no"]],a:1},lines:[{c:"ew-gross",s:330.93,e:332.80,who:"Kid",text:"Ew, gross!"}]}]},
+  {id:"s5",title:"Give It Back!",emoji:"💰",start:389.6,end:397.5,stops:[{at:397.35,check:{q:"What did Rhino take?",o:[["💰","money"],["🍦","ice cream"],["🚲","a bike"]],a:0},lines:[{c:"give-back",s:395.86,e:397.33,who:"Dad",text:"Hey, give that back!"}]}]},
+  {id:"s6",title:"Let's Play!",emoji:"🏊",start:628.4,end:639.5,stops:[
+    {at:632.55,lines:[{c:"lets-play",s:629.96,e:632.53,who:"Kid",text:"Oh, come on in. Let's play!"}]},
+    {at:639.36,check:{q:"Do they like the water?",o:[["😊","yes"],["😢","no"]],a:0},lines:[{c:"feels-good",s:637.20,e:639.34,who:"Mom",text:"The water feels so good."}]}]},
+  {id:"s7",title:"Snow Cones",emoji:"🍧",start:696.6,end:720.8,stops:[
+    {at:717.2,check:{q:"What does she give him?",o:[["🍧","a snow cone"],["🍦","ice cream"],["🍋","lemonade"]],a:0},lines:[{c:"here-you-go",s:715.55,e:717.18,who:"Team Spidey",text:"Here you go."}]},
+    {at:720.72,lines:[{c:"thank-you",s:717.18,e:718.52,who:"Kid",text:"Oh, thank you, Team Spidey!"},{c:"youre-welcome",s:719.85,e:720.69,who:"Spin",text:"You're welcome."}]}]},
+  {id:"s8",title:"What a Mess",emoji:"💥",start:798.2,end:810.5,stops:[
+    {at:806.45,check:{q:"What happened?",o:[["💥","a big mess"],["🎂","a party"]],a:0},lines:[{c:"oh-no",s:804.80,e:806.41,who:"Ghosty",text:"Oh, no."}]},
+    {at:810.45,lines:[{c:"sorry-help",s:807.37,e:810.41,who:"Ghosty",text:"Oh, sorry, Peter. Here, let me help."}]}]},
+  {id:"s9",title:"Stuck!",emoji:"🍯",start:848.6,end:861.4,stops:[{at:861.32,check:{q:"Can they pull apart?",o:[["👍","yes"],["👎","no"]],a:1},lines:[{c:"im-stuck",s:859.23,e:861.29,who:"Ghosty",text:"We're really stuck."}]}]},
+  {id:"s10",title:"Are You Okay?",emoji:"🤖",start:891.0,end:899.5,stops:[{at:899.42,check:{q:"Who fell down?",o:[["🤖","the robot"],["🕷️","Spidey"]],a:0},lines:[{c:"are-you-okay",s:898.33,e:899.40,who:"Ghosty",text:"Are you okay?"}]}]},
+  {id:"s11",title:"Together!",emoji:"🙌",start:919.0,end:930.1,stops:[{at:930.08,lines:[{c:"together",s:928.23,e:930.06,who:"Spidey",text:"Together? Together!"}]}]},
+  {id:"s12",title:"You Go First",emoji:"🫲",start:949.4,end:979.1,stops:[
+    {at:961.48,check:{q:"Did they fall down?",o:[["👍","yes"],["👎","no"]],a:0},lines:[{c:"you-go-first",s:957.86,e:961.46,who:"Spidey",text:"What if you go first, and then I'll follow you?"}]},
+    {at:979.06,lines:[{c:"we-can-do-this",s:976.48,e:979.08,who:"Spidey",text:"Got it! Ready? We can do this."}]}]},
+  {id:"s13",title:"Now You!",emoji:"👉",start:979.1,end:988.5,stops:[{at:988.42,lines:[{c:"now-you",s:985.82,e:988.39,who:"Spidey",text:"You're next! Now you!"}]}]},
+  {id:"s14",title:"Look Out!",emoji:"⚠️",start:1021.6,end:1049.6,stops:[
+    {at:1024.95,check:{q:"Is something coming?",o:[["⚠️","yes"],["😴","no"]],a:0},lines:[{c:"look-out",s:1023.92,e:1024.89,who:"Spidey",text:"Uh-oh, look out!"}]},
+    {at:1049.5,lines:[{c:"got-ya",s:1045.68,e:1046.75,who:"Spidey",text:"Whoa! I got ya!"},{c:"thank-you",s:1048.18,e:1049.48,who:"Ghosty",text:"Thanks, Spidey."}]}]},
+  {id:"s15",title:"What's This?",emoji:"🤔",start:1140.8,end:1150.8,stops:[{at:1150.7,check:{q:"Is Rhino surprised?",o:[["😮","yes"],["😴","no"]],a:0},lines:[{c:"whats-this",s:1149.11,e:1150.68,who:"Rhino",text:"Huh? What's this?"}]}]},
+  {id:"s16",title:"My Way!",emoji:"😤",start:1371.7,end:1383.3,stops:[{at:1383.25,note:"They fight. A better way:",check:{q:"Are they good friends right now?",o:[["👍","yes"],["👎","no"]],a:1},lines:[{c:"take-turns",s:834.80,e:836.64,who:"Ghosty",text:"Or find a way to take turns."}]}]}
+ ]}]
+};
+
+/* ================= storage ================= */
+const LS="hero-words-v3";
+let CH={}, EPS=[], SRC={};
+let M={}, DONE={}, CUSTOM={chunks:[],episodes:[]};
+const P={voice:"",speed:1,zh:false,words:false};
+function load(){try{const d=JSON.parse(localStorage.getItem(LS)||"{}");M=d.mem||{};DONE=d.done||{};CUSTOM=d.custom||CUSTOM;Object.assign(P,d.prefs||{});}catch(e){}}
+function save(){try{localStorage.setItem(LS,JSON.stringify({mem:M,done:DONE,custom:CUSTOM,prefs:P}));}catch(e){toast("Could not save on this device");}}
+function buildIndex(){
+  CH={};EPS=[];SRC={};
+  for(const c of [...PACK.chunks,...CUSTOM.chunks])CH[c.id]=c;
+  const seen=new Set();for(const ep of [...PACK.episodes,...CUSTOM.episodes]){if(seen.has(ep.id))continue;seen.add(ep.id);EPS.push(ep);}
+  for(const ep of EPS)for(const sc of ep.scenes)for(const st of sc.stops)for(const ln of st.lines){(SRC[ln.c]=SRC[ln.c]||[]).push({v:ep.videoId,s:ln.s,e:ln.e,who:ln.who,text:ln.text,ep:ep.id,sc:sc.id});}
+  for(const c of Object.values(CH))for(const x of (c.extra||[]))(SRC[c.id]=SRC[c.id]||[]).push(x);
+}
+
+/* ================= memory & review schedule ================= */
+function today(o=0){const d=new Date();d.setDate(d.getDate()+o);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function mem(id){return M[id];}
+function stOf(id){return M[id]?M[id].st:-1;}
+function rate(id,r){
+  const m=M[id]||{st:0,reps:0,hist:[]};const prev=M[id]?m.st:0;
+  if(r>=prev){m.st=Math.max(prev,r);m.reps=(m.reps||0)+1;}else{m.st=Math.max(r,prev-1);m.reps=0;}
+  const base=[1,1,2,3,5][m.st];const mult=Math.min(4,1+Math.floor(((m.reps||1)-1)/2));
+  const days=(r===0||r<prev)?1:base*mult;
+  m.due=today(days);m.last=today();m.hist=[...(m.hist||[]),[today(),r]].slice(-30);M[id]=m;save();renderNav();
+}
+function dueList(){const t=today();return Object.keys(M).filter(id=>CH[id]&&M[id].due<=t).sort((a,b)=>M[a].st-M[b].st||(M[a].due<M[b].due?-1:1));}
+
+/* ================= voice (for questions & frames) ================= */
+function enVoices(){return"speechSynthesis"in window?speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)):[];}
+function scoreVoice(v){let s=0;const n=v.name;if(/natural|neural/i.test(n))s+=60;if(/premium/i.test(n))s+=55;if(/enhanced/i.test(n))s+=45;if(/online/i.test(n))s+=10;
+  if(/google us english/i.test(n))s+=25;if(/en[-_]US/i.test(v.lang))s+=12;if(/\bAna\b/i.test(n))s+=8;if(/samantha|ava|zoe|jenny|aria/i.test(n))s+=6;
+  if(/compact|espeak|novelty|bells|bubbles|bad news|whisper|zarvox|trinoids|cellos|organ|boing|jester|superstar|wobble|albert|bahh/i.test(n))s-=80;return s;}
+function bestVoices(){return enVoices().sort((a,b)=>scoreVoice(b)-scoreVoice(a));}
+function mainVoice(){const vs=bestVoices();return vs.find(v=>v.name===P.voice)||vs[0]||null;}
+if("speechSynthesis"in window){speechSynthesis.onvoiceschanged=()=>{if(S.view==="grown")render();};speechSynthesis.getVoices();}
+let speakTok=0;
+function speak(text,opt={}){return new Promise(res=>{
+  if(!("speechSynthesis"in window)||!text){return res();}
+  const tok=++speakTok;speechSynthesis.cancel();pauseVideo();
+  const u=new SpeechSynthesisUtterance(text);const v=mainVoice();if(v){u.voice=v;u.lang=v.lang;}else u.lang="en-US";
+  u.rate=Math.max(.5,Math.min(1.5,.95*P.speed*(opt.slow?.7:1)));u.pitch=1.05;
+  const a=opt.ava;u.onstart=()=>{if(tok===speakTok&&a)a.classList.add("talking");};
+  const done=()=>{if(a)a.classList.remove("talking");res();};u.onend=done;u.onerror=done;
+  setTimeout(()=>{if(tok===speakTok)speechSynthesis.speak(u);},60);});}
+
+/* ================= sound fx ================= */
+let actx=null;
+function sfx(kind){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const seq={pop:[[660,.06]],tap:[[520,.05]],right:[[660,.09],[880,.12]],wrong:[[220,.18]],star:[[523,.08],[659,.08],[784,.08],[1047,.18]]}[kind]||[[600,.05]];
+  let t=actx.currentTime;for(const[f,d]of seq){const o=actx.createOscillator(),g=actx.createGain();o.type=kind==="wrong"?"triangle":"sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+d+.02);t+=d*.9;}}catch(e){}}
+
+/* ================= helpers ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let toastT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1900);}
+function celebrate(icon="🌟"){const b=$("#burst");b.textContent=icon;b.classList.remove("go");void b.offsetWidth;b.classList.add("go");sfx("star");}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function W(text,cls="words"){return P.words&&text?`<div class="${cls}">${esc(text)}</div>`:"";}
+function ZH(text){return P.words&&P.zh&&text?`<div class="zh">${esc(text)}</div>`:"";}
+function say(c){return c.ex||c.en.replace(/\s*___\s*/," ");}
+function findScene(epId,scId){const ep=EPS.find(e=>e.id===epId);return ep&&{ep,sc:ep.scenes.find(s=>s.id===scId)};}
+function sceneKey(ep,sc){return ep.id+"/"+sc.id;}
+
+/* ================= YouTube player ================= */
+let YTP=null,ytReady=false,ytVid=null,seg=null,lastClip=null,timer=null,slow=false,pending=null;
+function loadYT(){
+  if(location.protocol==="file:")$("#ytNote").textContent="⚠️ Videos only play when this page is opened from a web address (http/https), not from a file.";
+  if(window.YT&&window.YT.Player){initPlayer();return;}
+  if(document.getElementById("ytapi"))return;
+  window.onYouTubeIframeAPIReady=initPlayer;
+  const sc=document.createElement("script");sc.id="ytapi";sc.src="https://www.youtube.com/iframe_api";
+  sc.onerror=()=>{$("#ytNote").textContent="⚠️ Could not load YouTube. Check the internet and reload.";};document.head.appendChild(sc);
+}
+function noCaptions(){try{YTP.unloadModule("captions");YTP.unloadModule("cc");}catch(e){}}
+function initPlayer(){
+  if(YTP)return;ytVid=EPS[0]?EPS[0].videoId:V1;
+  const vars={playsinline:1,rel:0,modestbranding:1,controls:1,cc_load_policy:0,iv_load_policy:3,disablekb:0};
+  if(/^https?:/.test(location.protocol))vars.origin=location.origin;
+  YTP=new YT.Player("ytplayer",{videoId:ytVid,playerVars:vars,events:{
+    onReady:()=>{ytReady=true;noCaptions();if(pending){const p=pending;pending=null;p();}},
+    onError:e=>{$("#ytNote").innerHTML=`⚠️ This video can't play here (error ${esc(e.data)}). <a href="https://www.youtube.com/watch?v=${encodeURIComponent(ytVid)}" target="_blank" rel="noopener">Open it on YouTube</a>.`;},
+    onStateChange:e=>{$("#pPause").textContent=e.data===1?"⏸":"▶";if(e.data===1){noCaptions();try{YTP.setPlaybackRate(slow?.75:1);}catch(x){}}}}});
+}
+function whenReady(fn){if(YTP&&ytReady)fn();else{pending=fn;loadYT();}}
+function pauseVideo(){if(YTP&&ytReady)try{if(YTP.getPlayerState()===1)YTP.pauseVideo();}catch(e){}}
+function stopAll(){clearInterval(timer);timer=null;seg=null;pauseVideo();}
+function startAt(v,s){if(ytVid!==v){ytVid=v;YTP.loadVideoById({videoId:v,startSeconds:s});}else{YTP.seekTo(s,true);YTP.playVideo();}}
+function runTimer(){clearInterval(timer);timer=setInterval(tick,200);}
+function playClip(v,s,e,onEnd){whenReady(()=>{speechSynthesis&&speechSynthesis.cancel();seg={kind:"clip",s:Math.max(0,s-.15),e:e+.35,onEnd};lastClip={v,s,e};startAt(v,seg.s);runTimer();});}
+function playScene(ep,sc,fromT,nextStop,onStop,onEnd){whenReady(()=>{speechSynthesis&&speechSynthesis.cancel();
+  seg={kind:"scene",s:sc.start,e:sc.end,stops:sc.stops,next:nextStop||0,onStop,onEnd};lastClip={v:ep.videoId,s:sc.start,e:sc.end,scene:true};
+  startAt(ep.videoId,fromT??sc.start);runTimer();});}
+function tick(){
+  if(!seg||!YTP)return;let t;try{t=YTP.getCurrentTime();}catch(e){return;}
+  if(YTP.getPlayerState()!==1)return;
+  if(seg.kind==="scene"&&seg.next<seg.stops.length&&t>=seg.stops[seg.next].at-.12){
+    YTP.pauseVideo();const i=seg.next;seg.next++;const saved=seg;seg=null;clearInterval(timer);saved.onStop&&saved.onStop(i,saved);return;}
+  if(t>=seg.e-.12){YTP.pauseVideo();const cb=seg.onEnd;seg=null;clearInterval(timer);cb&&cb();}
+}
+function resumeScene(saved,at){whenReady(()=>{seg=saved;YTP.seekTo(at,true);YTP.playVideo();runTimer();});}
+$("#pPause").onclick=()=>{if(!YTP||!ytReady)return;if(YTP.getPlayerState()===1)YTP.pauseVideo();else YTP.playVideo();};
+$("#pAgain").onclick=()=>{if(!lastClip)return;if(lastClip.scene&&S.view==="scene"){startScene();return;}playClip(lastClip.v,lastClip.s,lastClip.e);};
+$("#pSlow").onclick=()=>{slow=!slow;$("#pSlow").classList.toggle("on",slow);try{YTP.setPlaybackRate(slow?.75:1);}catch(e){}};
+function playSource(src,onEnd){if(src)playClip(src.v,src.s,src.e,onEnd);}
+
+/* ================= navigation ================= */
+const S={view:"today",ep:null,sc:null,chunk:null};
+let G={};
+function go(view,extra){stopAll();speechSynthesis&&speechSynthesis.cancel();Object.assign(S,{view},extra||{});G={};render();window.scrollTo({top:0});}
+function renderNav(){const n=dueList().length,b=$("#dueBadge");b.hidden=!n;b.textContent=n;
+  document.querySelectorAll("[data-nav]").forEach(x=>x.setAttribute("aria-current",String(x.dataset.nav===({scene:"shows",chunk:"phrases"}[S.view]||S.view))));
+  const wb=$("#wordsBtn");wb.classList.toggle("on",P.words);wb.setAttribute("aria-pressed",String(P.words));}
+function showStage(title,back){$("#stage").hidden=false;$("#pTitle").textContent=title;$("#pBack").onclick=back;loadYT();}
+function render(){renderNav();const v=$("#view");
+  if(!["scene","review","chunk"].includes(S.view))$("#stage").hidden=true;
+  ({today:vToday,shows:vShows,scene:vScene,phrases:vPhrases,chunk:vChunk,review:vReview,grown:vGrown}[S.view]||vToday)(v);}
+document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{sfx("tap");go(b.dataset.nav);});
+$("#wordsBtn").onclick=()=>{P.words=!P.words;save();renderNav();rerenderCurrent();};
+function rerenderCurrent(){if(S.view==="scene"||S.view==="review"){toast(P.words?"Words on: shown from the next card":"Words off");return;}if(G.redraw)G.redraw();else render();}
+
+/* ================= shared task pieces ================= */
+function rateHTML(){return`<div class="eyebrow">How did it go?</div><div class="rate">${STATES.map(s=>`<button data-rate="${s.k}"><span>${s.icon}</span>${s.label}</button>`).join("")}</div>`;}
+function bindRate(box,id,after){box.querySelectorAll("[data-rate]").forEach(b=>b.onclick=()=>{const r=+b.dataset.rate;rate(id,r);sfx(r>=3?"star":r>=1?"right":"pop");if(r>=3)celebrate(r===4?"🌟":"🔁");after&&after(r);});}
+function moveHTML(c){return`<div class="move"><span class="em">${esc(c.move[0])}</span><span>Do the move: ${esc(c.move[1])}</span></div>`;}
+function stageFor(c,hasCheck){const st=Math.max(0,stOf(c.id));const out=[];if(hasCheck&&st<2)out.push("check");out.push("listen");if(st>=2&&c.frame)out.push("swap");if(st>=3)out.push("transfer");out.push("rate");return out;}
+
+/* listen: original audio first, then move, then speak */
+function taskListen(box,c,line,next){
+  let n=0;
+  const draw=()=>{box.innerHTML=`
+    <span class="eyebrow">Listen</span>
+    <span class="bigem"><span class="ava" id="lAva">${esc(c.emoji)}</span></span>
+    ${W(line?line.text:say(c))}${ZH(c.zh)}
+    <div class="dots">${[0,1,2].map(i=>`<i class="${i<n?"on":""}"></i>`).join("")}</div>
+    <div class="row center"><button class="btn sky big" id="lPlay">👂 Listen</button></div>
+    ${n>=1?moveHTML(c):""}
+    ${n>=2?`<h3>🗣️ Your turn! Say it with the move.</h3>`:`<p class="note">${n===0?"Just listen first.":"Listen again and do the move."}</p>`}
+    <div class="row center"><button class="btn ${n>=2?"mint big":""}" id="lNext" ${n<1?"disabled":""}>Next ▶</button></div>`;
+    $("#lPlay").onclick=()=>{const a=$("#lAva");a.classList.add("talking");
+      const done=()=>{a&&a.classList.remove("talking");n=Math.min(3,n+1);draw();};
+      if(line)playClip(line.v||G.v,line.s,line.e,done);else speak(say(c),{}).then(done);};
+    $("#lNext").onclick=next;};
+  draw();
+}
+function taskCheck(box,check,next){
+  box.innerHTML=`<span class="eyebrow">What happened?</span>
+    <button class="btn sky" id="cQ"><span class="ava" id="cAva">🦸</span> 🔊 Question</button>${W(check.q)}
+    <div class="choices">${check.o.map((o,i)=>`<button class="sticker pic" data-o="${i}" aria-label="${esc(o[1])}">${esc(o[0])}</button>`).join("")}</div>`;
+  const ask=()=>speak(check.q,{ava:$("#cAva")});$("#cQ").onclick=ask;ask();
+  box.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{const i=+b.dataset.o;
+    if(i===check.a){b.classList.add("right");sfx("right");speak(check.o[i][1]);setTimeout(next,900);}
+    else{b.classList.remove("wrong");void b.offsetWidth;b.classList.add("wrong");sfx("wrong");}});
+}
+function taskSwap(box,c,next){
+  let pick=null;const f=c.frame;const parts=f.t.split("___");
+  const draw=()=>{const o=pick!=null?f.o[pick]:null;box.innerHTML=`
+    <span class="eyebrow">Make a new one</span>
+    <div class="frame">${P.words?esc(parts[0].trim()):""} <span class="blank${o?" filled":""}">${o?esc(o.e):"❓"}</span> ${P.words?esc((parts[1]||"").trim()):""}</div>
+    <div class="choices">${f.o.map((x,i)=>`<button class="sticker pic" data-p="${i}" aria-label="${esc(x.w)}" style="${pick===i?"background:var(--sun)":""}">${esc(x.e)}</button>`).join("")}</div>
+    ${o?`<h3>🗣️ Now you say it!</h3><div class="row center"><button class="btn sky" id="sHear"><span class="ava" id="sAva">🦸</span> Hear it</button><button class="btn mint big" id="sNext">Next ▶</button></div>`:`<p class="note">Pick a picture.</p>`}`;
+    box.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{pick=+b.dataset.p;sfx("tap");draw();sayIt();});
+    const sayIt=()=>{const x=f.o[pick];speak(parts[0]+x.w+(parts[1]||""),{ava:$("#sAva")});};
+    const h=$("#sHear");if(h)h.onclick=sayIt;const nx=$("#sNext");if(nx)nx.onclick=next;};
+  draw();
+}
+function taskTransfer(box,c,next){
+  const s=c.sit&&c.sit.length?c.sit[Math.floor(Math.random()*c.sit.length)]:{q:"What do you say?",e:c.emoji};
+  box.innerHTML=`<span class="eyebrow">New place</span><span class="bigem">${esc(s.e)}</span>
+    <button class="btn sky" id="tQ"><span class="ava" id="tAva">🦸</span> 🔊 Ask</button>${W(s.q)}
+    <p class="note">Wait. Let your child answer on their own. Need help?</p>
+    <div class="row center"><button class="btn" id="tHint">👂 Hear the answer</button><button class="btn mint big" id="tNext">Next ▶</button></div>`;
+  const ask=()=>speak(s.q,{ava:$("#tAva")});$("#tQ").onclick=ask;ask();
+  $("#tHint").onclick=()=>{const src=(SRC[c.id]||[])[0];if(src)playSource(src);else speak(say(c));};
+  $("#tNext").onclick=next;
+}
+function taskRate(box,c,next){
+  box.innerHTML=`<span class="bigem">${esc(c.emoji)}</span>${W(say(c))}${rateHTML()}`;
+  bindRate(box,c.id,()=>setTimeout(next,450));
+}
+/* run a list of stages for one chunk */
+function runStages(box,c,stages,ctx,done){
+  let i=0;const step=()=>{if(i>=stages.length){done&&done();return;}const k=stages[i++];
+    if(k==="check")taskCheck(box,ctx.check,step);
+    else if(k==="listen")taskListen(box,c,ctx.line,step);
+    else if(k==="swap")taskSwap(box,c,step);
+    else if(k==="transfer")taskTransfer(box,c,step);
+    else taskRate(box,c,step);};
+  step();
+}
+
+/* ================= TODAY ================= */
+function vToday(v){
+  const due=dueList();const next=nextScene();
+  const learning=Object.keys(M).filter(id=>CH[id]&&M[id].st>=1&&M[id].st<=3).sort((a,b)=>(M[b].last||"").localeCompare(M[a].last||"")).slice(0,2);
+  const homeIds=learning.length?learning:(next?next.sc.stops.flatMap(s=>s.lines.map(l=>l.c)).slice(0,2):[]);
+  v.innerHTML=`
+  <div class="lead"><span class="eyebrow">${new Date().toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"})}</span><h2>Today</h2><p class="note">About 10 minutes: review first, then one new scene.</p></div>
+  <div class="grid">
+    <section class="sticker task"><span class="bigem">🔁</span><h3>${due.length?`${due.length} to review`:"Nothing to review"}</h3>
+      <button class="btn ${due.length?"sun big":""}" id="tReview" ${due.length?"":"disabled"}>Review ▶</button></section>
+    <section class="sticker task"><span class="bigem">${next?esc(next.sc.emoji):"🎉"}</span><h3>${next?esc(next.sc.title):"All scenes watched!"}</h3>
+      ${next?`<button class="btn sun big" id="tNew">New scene ▶</button>`:`<button class="btn" id="tShows">Pick a scene</button>`}</section>
+  </div>
+  ${homeIds.length?`<div class="lead"><span class="eyebrow">For grown-ups</span><h2>Use at home today</h2><p class="note">Say these in real moments today, with the move. Real-life use is what makes them stick.</p></div>
+  <div class="panel">${homeIds.map(id=>{const c=CH[id];return`<div class="sticker home"><span class="em">${esc(c.emoji)}</span>
+    <div style="min-width:0"><b>${esc(say(c))}</b>${P.zh?`<div class="zh">${esc(c.zh)}</div>`:""}<div class="note">🏠 ${esc(c.home)} · ${esc(c.move[0])} ${esc(c.move[1])}</div></div>
+    <button class="btn sm icon sky" data-hs="${esc(id)}" aria-label="Hear">🔊</button></div>`;}).join("")}</div>`:""}
+  <div class="lead"><span class="eyebrow">Progress</span><h2>Phrases by goal</h2></div>
+  <section class="sticker module"><div class="bars">${MODULES.map(m=>{const ids=Object.values(CH).filter(c=>c.m===m.id).map(c=>c.id);const tot=ids.length||1;
+    const cnt=[0,1,2,3,4].map(k=>ids.filter(id=>stOf(id)===k).length);
+    return`<div class="bar"><span>${m.emoji} ${esc(m.title)}</span><span class="track">${[4,3,2,1,0].map(k=>`<i class="st${k}" style="width:${cnt[k]/tot*100}%"></i>`).join("")}</span></div>`;}).join("")}</div>${legend()}</section>`;
+  const r=$("#tReview");if(r)r.onclick=()=>go("review");
+  const n=$("#tNew");if(n)n.onclick=()=>go("scene",{ep:next.ep.id,sc:next.sc.id});
+  const s=$("#tShows");if(s)s.onclick=()=>go("shows");
+  v.querySelectorAll("[data-hs]").forEach(b=>b.onclick=()=>speak(say(CH[b.dataset.hs])));
+}
+function legend(){return`<div class="legend">${STATES.map(s=>`<span><i class="st${s.k}"></i>${s.icon} ${s.label}</span>`).join("")}</div>`;}
+function nextScene(){for(const ep of EPS)for(const sc of ep.scenes)if(!DONE[sceneKey(ep,sc)])return{ep,sc};return null;}
+
+/* ================= SHOWS ================= */
+function vShows(v){
+  v.innerHTML=EPS.map(ep=>`
+  <div class="lead"><span class="eyebrow">Show</span><h2>${esc(ep.title)}</h2></div>
+  <div class="grid">${ep.scenes.map(sc=>{const ids=[...new Set(sc.stops.flatMap(s=>s.lines.map(l=>l.c)))];return`
+    <button class="sticker scene" data-ep="${esc(ep.id)}" data-sc="${esc(sc.id)}">${DONE[sceneKey(ep,sc)]?'<span class="done">✓</span>':""}
+      <span class="em">${esc(sc.emoji)}</span><h3>${esc(sc.title)}</h3>
+      <span class="chips">${ids.map(id=>CH[id]?`<span class="chip st${Math.max(0,stOf(id))}">${esc(CH[id].emoji)}</span>`:"").join("")}</span></button>`;}).join("")}</div>`).join("")+`<section class="sticker module">${legend()}</section>`;
+  v.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>{sfx("tap");go("scene",{ep:b.dataset.ep,sc:b.dataset.sc});});
+}
+
+/* ================= SCENE ================= */
+function vScene(v){
+  const f=findScene(S.ep,S.sc);if(!f||!f.sc){go("shows");return;}
+  const{ep,sc}=f;G.v=ep.videoId;
+  showStage(sc.title,()=>go("shows"));
+  v.innerHTML=`<section class="sticker task" id="box"></section>`;
+  G.redraw=null;
+  const box=$("#box");
+  box.innerHTML=`<span class="bigem">${esc(sc.emoji)}</span><h3>Watch the scene</h3>
+    <p class="note">It stops by itself at the important line${sc.stops.length>1?"s":""}.</p>
+    <div class="row center"><button class="btn sun big" id="scPlay">▶ Watch</button></div>`;
+  $("#scPlay").onclick=startScene;
+}
+function startScene(){
+  const{ep,sc}=findScene(S.ep,S.sc);const box=$("#box");
+  box.innerHTML=`<span class="bigem">👀</span><h3>Watch and listen…</h3>`;
+  window.scrollTo({top:$("#stage").offsetTop-8,behavior:"smooth"});
+  playScene(ep,sc,sc.start,0,(i,saved)=>onStop(ep,sc,i,saved),()=>sceneEnd(ep,sc));
+}
+function onStop(ep,sc,i,saved){
+  const st=sc.stops[i];const box=$("#box");box.scrollIntoView({behavior:"smooth",block:"start"});
+  const queue=st.lines.map((ln,k)=>({ln:{...ln,v:ep.videoId},c:CH[ln.c],first:k===0})).filter(x=>x.c);
+  let qi=0;
+  const nextLine=()=>{if(qi>=queue.length){resumeCard();return;}const{ln,c,first}=queue[qi++];
+    const stages=stageFor(c,first&&!!st.check).filter(s=>s!=="transfer");
+    runStages(box,c,stages,{check:st.check,line:ln},nextLine);};
+  const resumeCard=()=>{box.innerHTML=`<span class="bigem">🎬</span><h3>Great! Let's keep watching.</h3>
+    <div class="row center"><button class="btn sun big" id="goOn">▶ Keep watching</button></div>`;
+    $("#goOn").onclick=()=>{box.innerHTML=`<span class="bigem">👀</span><h3>Watch and listen…</h3>`;resumeScene(saved,st.at+.05);};};
+  if(st.note){box.innerHTML=`<span class="bigem">💡</span><h3>${esc(st.note)}</h3><div class="row center"><button class="btn sun big" id="nGo">Next ▶</button></div>`;$("#nGo").onclick=nextLine;}
+  else nextLine();
+}
+function sceneEnd(ep,sc){
+  DONE[sceneKey(ep,sc)]=today();save();celebrate("🎉");
+  const ids=[...new Set(sc.stops.flatMap(s=>s.lines.map(l=>l.c)))].filter(id=>CH[id]);
+  const box=$("#box");let i=0;
+  const tryHome=()=>{if(i>=ids.length){finishCard();return;}const c=CH[ids[i++]];
+    taskTransfer(box,c,()=>taskRate(box,c,tryHome));};
+  const finishCard=()=>{const nx=nextScene();box.innerHTML=`<span class="bigem">🏆</span><h3>Scene done!</h3>
+    <div class="chips" style="justify-content:center">${ids.map(id=>`<span class="chip st${Math.max(0,stOf(id))}">${esc(CH[id].emoji)}</span>`).join("")}</div>
+    <div class="row center">${nx?`<button class="btn sun big" id="fNext">Next scene ▶</button>`:""}<button class="btn" id="fHome">🏠 Today</button></div>`;
+    const n=$("#fNext");if(n)n.onclick=()=>go("scene",{ep:nx.ep.id,sc:nx.sc.id});$("#fHome").onclick=()=>go("today");};
+  box.innerHTML=`<span class="bigem">🏠</span><h3>Now try it in real life</h3><p class="note">Grown-up: ask the question. Let your child answer without hearing the line first.</p>
+    <div class="row center"><button class="btn sun big" id="hGo">Start ▶</button><button class="btn" id="hSkip">Skip</button></div>`;
+  $("#hGo").onclick=tryHome;$("#hSkip").onclick=finishCard;
+}
+
+/* ================= PHRASES ================= */
+function vPhrases(v){
+  v.innerHTML=`<div class="lead"><span class="eyebrow">Phrase map · age 5–6</span><h2>Phrases</h2><p class="note">Tap a phrase to hear it from the show and practice it.</p></div>
+  ${MODULES.map(m=>{const cs=Object.values(CH).filter(c=>c.m===m.id);if(!cs.length)return"";return`
+    <section class="sticker module"><h3>${m.emoji} ${esc(m.title)}${P.words&&P.zh?` <span class="zh">${esc(m.zh)}</span>`:""}</h3>
+    <div class="ptiles">${cs.map(c=>{const st=Math.max(0,stOf(c.id));return`<button class="ptile st${st}" data-c="${esc(c.id)}"><span class="em">${esc(c.emoji)}</span>${P.words?esc(c.en):""}<span class="lv">${stOf(c.id)<0?"new":STATES[st].icon}</span></button>`;}).join("")}</div></section>`;}).join("")}
+  <section class="sticker module">${legend()}</section>`;
+  v.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{sfx("tap");go("chunk",{chunk:b.dataset.c});});
+}
+function vChunk(v){
+  const c=CH[S.chunk];if(!c){go("phrases");return;}const srcs=SRC[c.id]||[];
+  showStage(P.words?c.en:"Practice",()=>go("phrases"));G.v=srcs[0]?srcs[0].v:V1;
+  const st=stOf(c.id);
+  v.innerHTML=`<section class="sticker task" id="box"></section>
+  <section class="sticker module"><div class="eyebrow">For grown-ups</div>
+    <h3>${esc(c.en)}</h3>${P.zh?`<div class="zh">${esc(c.zh)}</div>`:""}
+    <p class="note">🏠 ${esc(c.home)}</p><p class="note">${esc(c.move[0])} ${esc(c.move[1])}</p>
+    <div class="row">${srcs.map((s,i)=>`<button class="btn sm" data-src="${i}">🎬 ${esc(s.who||"Clip")} ${i+1}</button>`).join("")}${srcs.length?"":`<span class="note">No clip yet. The voice reads it.</span>`}</div>
+    <p class="note">Now: ${st<0?"new":STATES[st].icon+" "+STATES[st].label}</p></section>`;
+  v.querySelectorAll("[data-src]").forEach(b=>b.onclick=()=>playSource(srcs[+b.dataset.src]));
+  const box=$("#box");
+  const start=()=>runStages(box,c,stageFor(c,false),{line:srcs[0]||null},()=>{box.innerHTML=`<span class="bigem">✅</span><h3>Done!</h3><div class="row center"><button class="btn" id="again">Again</button><button class="btn sun" id="back">🧩 Phrases</button></div>`;$("#again").onclick=start;$("#back").onclick=()=>go("phrases");});
+  G.redraw=()=>vChunk(v);
+  start();
+}
+
+/* ================= REVIEW ================= */
+function vReview(v){
+  const due=dueList().slice(0,8);
+  if(!due.length){$("#stage").hidden=true;v.innerHTML=`<section class="sticker task"><span class="bigem">🎉</span><h3>Nothing to review today</h3><p class="note">Phrases come back here on the day they need practice.</p><div class="row center"><button class="btn sun" id="rNew">Watch a new scene</button></div></section>`;
+    $("#rNew").onclick=()=>{const n=nextScene();n?go("scene",{ep:n.ep.id,sc:n.sc.id}):go("shows");};return;}
+  showStage("Review",()=>go("today"));
+  v.innerHTML=`<section class="sticker task" id="box"></section>`;
+  const box=$("#box");let i=0;
+  const next=()=>{if(i>=due.length){celebrate("🏆");box.innerHTML=`<span class="bigem">🏆</span><h3>Review done!</h3><div class="row center"><button class="btn sun big" id="rDone">🏠 Today</button></div>`;$("#rDone").onclick=()=>go("today");return;}
+    const c=CH[due[i++]];const srcs=SRC[c.id]||[];const src=srcs.length?srcs[Math.floor(Math.random()*srcs.length)]:null;
+    const st=stOf(c.id);
+    if(st<=1)pickTask(box,c,src,()=>runStages(box,c,["listen","rate"],{line:src},next));
+    else if(st===2)runStages(box,c,["listen","rate"],{line:src},next);
+    else if(st===3)runStages(box,c,c.frame?["swap","rate"]:["transfer","rate"],{line:src},next);
+    else runStages(box,c,["transfer","rate"],{line:src},next);};
+  next();
+}
+/* listen to the clip, find the picture */
+function pickTask(box,c,src,next){
+  const others=shuffle(Object.values(CH).filter(x=>x.id!==c.id&&x.emoji!==c.emoji)).slice(0,2);
+  const opts=shuffle([c,...others]);
+  box.innerHTML=`<span class="eyebrow">Listen and find it</span>
+    <button class="btn sky big" id="pkPlay"><span class="ava" id="pkAva">👂</span> Listen</button>
+    <div class="choices">${opts.map((o,i)=>`<button class="sticker pic" data-k="${i}">${esc(o.emoji)}</button>`).join("")}</div>`;
+  const play=()=>{if(src)playSource(src);else speak(say(c),{ava:$("#pkAva")});};
+  $("#pkPlay").onclick=play;play();
+  box.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const o=opts[+b.dataset.k];
+    if(o===c){b.classList.add("right");sfx("right");setTimeout(next,700);}
+    else{b.classList.remove("wrong");void b.offsetWidth;b.classList.add("wrong");sfx("wrong");setTimeout(play,350);}});
+}
+
+/* ================= GROWN-UPS ================= */
+function videoIdOf(u){const m=String(u).match(/(?:youtu\.be\/|v=|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/);return m?m[1]:(/^[A-Za-z0-9_-]{11}$/.test(String(u).trim())?String(u).trim():null);}
+function srtText(raw){return String(raw).replace(/\r/g,"").split(/\n\n+/).map(b=>{const l=b.split("\n").filter(Boolean);const ti=l.findIndex(x=>x.includes("-->"));if(ti<0)return"";
+  const[a]=l[ti].split("-->");const tx=l.slice(ti+1).join(" ").trim();if(!tx||/^\[[^\]]*\]$/.test(tx)||/♪/.test(tx))return"";
+  const m=a.trim().match(/(\d+):(\d+):(\d+)[,.](\d+)/);const sec=m?(+m[1]*3600+ +m[2]*60+ +m[3]+ +m[4]/1000):0;
+  const e=l[ti].split("-->")[1].trim().match(/(\d+):(\d+):(\d+)[,.](\d+)/);const es=e?(+e[1]*3600+ +e[2]*60+ +e[3]+ +e[4]/1000):sec;
+  return`${sec.toFixed(2)}-${es.toFixed(2)}|${tx}`;}).filter(Boolean).join("\n");}
+function genPrompt(vid,srt){
+  const inv=Object.values(CH).map(c=>`${c.id} [${c.m}] ${c.en}`).join("\n");
+  return`You are building an English course for a 5–6-year-old child in Taiwan (Mandarin speaker). The course is organized by communication goal, not grammar. Modules: needs (I Need), play (Play Together), feel (Feelings), fix (Fix Problems), ask (Ask & Care).
+Method: audio first, short everyday chunks/idioms a child can reuse, a hand movement for each chunk, then swapping words, then using it in new real-life situations.
+
+From the subtitles below (format: start-end seconds|line; songs and sound effects removed), pick 8–16 short scenes (5–40 s) whose lines teach useful chunks for age 5–6. Reuse an existing chunk id when a line expresses the same chunk. Only create new chunks when needed (max 12).
+
+Existing chunks:
+${inv}
+
+Reply with ONLY one JSON object in a code block, in exactly this shape:
+{"episode":{"id":"${vid}","videoId":"${vid}","title":"short show title","scenes":[
+  {"id":"s1","title":"2-3 word title","emoji":"one emoji","start":seconds,"end":seconds,
+   "stops":[{"at":seconds,"check":{"q":"very simple question about what just happened","o":[["emoji","answer"],["emoji","answer"]],"a":0},
+             "lines":[{"c":"chunk-id","s":seconds,"e":seconds,"who":"speaker","text":"the exact subtitle line"}]}]}]},
+ "chunks":[{"id":"kebab-id","m":"needs|play|feel|fix|ask","lv":1,"en":"the chunk (use ___ for a swappable slot)","ex":"example if en has ___","zh":"Traditional Chinese (Taiwan)","emoji":"one picture emoji","move":["emoji","short hand-movement instruction"],"home":"when to use it at home","sit":[{"q":"new everyday situation + What do you say?","e":"emoji"}],"frame":{"t":"pattern with ___","o":[{"w":"word","e":"emoji"}]}}]}
+Rules: s/e copied exactly from the subtitles; "at" = the e of the last line in that stop (+0.05); 1–2 stops per scene; "check" is optional and must be answerable with pictures; "frame" is optional (only when a slot makes sense; 4 options); "chunks" contains only NEW chunks; keep idioms that sound natural. Use Traditional Chinese for zh.
+
+Subtitles:
+${srt}`;
+}
+function vGrown(v){
+  const vs=bestVoices(),mv=mainVoice();
+  v.innerHTML=`
+  ${location.protocol==="file:"?`<section class="sticker warn"><b>⚠️ Setup needed</b><p class="note">Videos only play when this page is opened from a web address. Put this file on GitHub Pages and open that link.</p></section>`:""}
+  <div class="lead"><span class="eyebrow">For grown-ups</span><h2>How to use</h2></div>
+  <section class="sticker form">
+    <ol class="how">
+      <li><b>Today</b>: review first, then one new scene. About 10 minutes.</li>
+      <li>The scene stops at the important line. Your child <b>listens first</b> (no words on screen), does the move, then says it.</li>
+      <li>After each phrase, tap how it went. This decides what comes next and when it comes back for review.</li>
+      <li>Use the <b>Use at home today</b> phrases in real moments. Tap <b>👁 Words</b> any time you need to see the English.</li>
+    </ol>
+    ${legend()}
+  </section>
+  <div class="lead"><h2>Settings</h2></div>
+  <section class="sticker form">
+    <div><label for="voiceSel">Voice for questions</label>
+      <select id="voiceSel">${vs.length?vs.map(x=>`<option value="${esc(x.name)}"${mv&&x.name===mv.name?" selected":""}>${esc(x.name)} (${esc(x.lang)})${scoreVoice(x)>=40?" ★":""}</option>`).join(""):"<option>No voices found</option>"}</select>
+      <p class="note">★ = natural voice. Windows: use Microsoft Edge and pick an “Online (Natural)” voice. iPad: Settings → Accessibility → Spoken Content → Voices → English → download an Enhanced voice.</p></div>
+    <div><label for="speed">Voice speed</label><select id="speed">${[[0.8,"Slower"],[1,"Normal"],[1.15,"Faster"]].map(([x,t])=>`<option value="${x}"${P.speed==x?" selected":""}>${t}</option>`).join("")}</select></div>
+    <label class="switch"><input type="checkbox" id="zhT" ${P.zh?"checked":""}> Show Chinese hints (with 👁 Words on)</label>
+  </section>
+  <div class="lead"><h2>Move progress</h2><p class="note">Progress is saved in this browser. Save a backup to continue on another device.</p></div>
+  <section class="sticker form"><div class="row"><button class="btn sm" id="exp">⬇️ Save backup</button><label class="btn sm" for="impFile">⬆️ Load backup</label><input type="file" id="impFile" accept=".json,application/json" hidden></div></section>
+  <div class="lead"><h2>Add a show</h2><p class="note">New phrases join the same phrase map. Phrases you already have get new clips, so review uses more examples.</p></div>
+  <section class="sticker form">
+    <ol class="how"><li>Download the English subtitles (.srt) with DownSub or yt-dlp.</li>
+      <li>Paste the YouTube link and pick the .srt file, then tap <b>Copy prompt</b>.</li>
+      <li>Paste it into a Claude chat and send. Copy Claude's JSON answer, paste it below, tap <b>Add show</b>.</li></ol>
+    <div><label for="ytUrl">YouTube link</label><input id="ytUrl" placeholder="https://youtu.be/..." inputmode="url"></div>
+    <div><label for="srtFile">Subtitles (.srt)</label><input type="file" id="srtFile" accept=".srt,.txt,.vtt"></div>
+    <div class="row"><button class="btn sm" id="copyPrompt">📋 Copy prompt</button></div>
+    <div><label for="jsonIn">Claude's JSON answer</label><textarea id="jsonIn" placeholder='{"episode": {...}, "chunks": [...]}'></textarea></div>
+    <div class="row"><button class="btn sun" id="addShow">✨ Add show</button></div>
+    <p class="status" id="st"></p>
+  </section>
+  ${CUSTOM.episodes.length?`<div class="lead"><h2>Added shows</h2></div><section class="sticker form">${CUSTOM.episodes.map(e=>`<div class="row" style="justify-content:space-between"><b>${esc(e.title)}</b><button class="btn sm" data-del="${esc(e.id)}">${G.del===e.id?"Delete?":"✕"}</button></div>`).join("")}</section>`:""}`;
+  $("#voiceSel").onchange=e=>{P.voice=e.target.value;save();speak("Hi! Let's learn English!");};
+  $("#speed").onchange=e=>{P.speed=+e.target.value;save();};
+  $("#zhT").onchange=e=>{P.zh=e.target.checked;save();};
+  $("#exp").onclick=()=>{const blob=new Blob([JSON.stringify({app:"hero-words",v:3,mem:M,done:DONE,custom:CUSTOM,prefs:P})],{type:"application/json"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hero-words-backup-"+today()+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);toast("Backup saved");};
+  $("#impFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(d.app!=="hero-words")throw 0;
+    for(const[k,m]of Object.entries(d.mem||{})){if(!M[k]||(m.last||"")>(M[k].last||""))M[k]=m;}Object.assign(DONE,d.done||{});
+    for(const c of (d.custom&&d.custom.chunks)||[])if(!CUSTOM.chunks.find(x=>x.id===c.id))CUSTOM.chunks.push(c);
+    for(const ep of (d.custom&&d.custom.episodes)||[])if(!CUSTOM.episodes.find(x=>x.id===ep.id))CUSTOM.episodes.push(ep);
+    save();buildIndex();toast("Backup loaded ✓");render();}catch(err){toast("That file is not a Hero Words backup");}};r.readAsText(f);};
+  let srt="";
+  $("#srtFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{srt=srtText(r.result);toast(`Subtitles loaded: ${srt.split("\n").length} lines`);};r.readAsText(f);};
+  const st=$("#st");
+  $("#copyPrompt").onclick=async()=>{st.classList.remove("err");const vid=videoIdOf($("#ytUrl").value);
+    if(!vid){st.textContent="Paste the YouTube link first.";st.classList.add("err");return;}
+    if(!srt){st.textContent="Pick the .srt file first.";st.classList.add("err");return;}
+    const text=genPrompt(vid,srt);
+    try{await navigator.clipboard.writeText(text);st.textContent="Prompt copied. Paste it into Claude.";}catch(e){$("#jsonIn").value=text;$("#jsonIn").select();st.textContent="Copy the text in the box, then clear it and paste Claude's answer.";}};
+  $("#addShow").onclick=()=>{st.classList.remove("err");
+    let raw=$("#jsonIn").value.trim();const fence=raw.match(/```(?:json)?\s*([\s\S]*?)```/);if(fence)raw=fence[1];
+    try{const d=JSON.parse(raw.slice(raw.indexOf("{"),raw.lastIndexOf("}")+1));const r=importPack(d);
+      st.textContent=`Added “${r.title}”: ${r.scenes} scenes, ${r.newChunks} new phrases.`;celebrate("🎬");setTimeout(()=>go("shows"),900);}
+    catch(e){st.textContent="That answer couldn't be read: "+(e.message||"check the JSON")+".";st.classList.add("err");}};
+  v.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const id=b.dataset.del;if(G.del!==id){G.del=id;vGrown(v);return;}
+    CUSTOM.episodes=CUSTOM.episodes.filter(e=>e.id!==id);save();buildIndex();G.del=null;vGrown(v);});
+}
+function importPack(d){
+  const ep=d.episode;if(!ep||!Array.isArray(ep.scenes)||!ep.scenes.length)throw new Error("no scenes");
+  const vid=videoIdOf(ep.videoId||ep.id)||videoIdOf($("#ytUrl").value);if(!vid)throw new Error("missing video id");
+  const num=x=>{const n=+x;if(!Number.isFinite(n))throw new Error("bad time");return n;};const str=x=>String(x??"");
+  let newC=0;
+  for(const c of (d.chunks||[])){if(!c||!c.id||!c.en||CH[c.id])continue;
+    CUSTOM.chunks.push({id:str(c.id).replace(/[^a-z0-9-]/gi,"-").toLowerCase(),m:MODULES.some(m=>m.id===c.m)?c.m:"play",lv:+c.lv||1,en:str(c.en),ex:c.ex?str(c.ex):undefined,zh:str(c.zh),emoji:str(c.emoji)||"💬",
+      move:Array.isArray(c.move)?[str(c.move[0])||"👋",str(c.move[1])]:["👋","Make a big gesture"],home:str(c.home),sit:(c.sit||[]).map(s=>({q:str(s.q),e:str(s.e)||"🤔"})),
+      frame:c.frame&&c.frame.t&&String(c.frame.t).includes("___")&&Array.isArray(c.frame.o)?{t:str(c.frame.t),o:c.frame.o.map(o=>({w:str(o.w),e:str(o.e)||"⭐"}))}:undefined});newC++;}
+  buildIndex();
+  const scenes=ep.scenes.map((sc,i)=>({id:"s"+(i+1),title:str(sc.title)||"Scene "+(i+1),emoji:str(sc.emoji)||"🎬",start:num(sc.start),end:num(sc.end),
+    stops:(sc.stops||[]).map(st=>({at:num(st.at),note:st.note?str(st.note):undefined,
+      check:st.check&&Array.isArray(st.check.o)&&st.check.o.length>1?{q:str(st.check.q),o:st.check.o.map(o=>[str(o[0]),str(o[1])]),a:+st.check.a||0}:undefined,
+      lines:(st.lines||[]).filter(l=>l&&CH[l.c]).map(l=>({c:str(l.c),s:num(l.s),e:num(l.e),who:str(l.who),text:str(l.text)}))})).filter(st=>st.lines.length).sort((a,b)=>a.at-b.at)})).filter(sc=>sc.stops.length);
+  if(!scenes.length)throw new Error("no usable scenes");
+  CUSTOM.episodes=CUSTOM.episodes.filter(e=>e.id!==vid);CUSTOM.episodes.push({id:vid,videoId:vid,title:str(ep.title)||"New show",scenes});
+  save();buildIndex();return{title:str(ep.title)||"New show",scenes:scenes.length,newChunks:newC};
+}
+
+/* ================= boot ================= */
+load();buildIndex();render();
+</script>
+</body>
+</html>

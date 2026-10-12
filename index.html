@@ -113,6 +113,8 @@ button{cursor:pointer}
 .stk .t{font-size:12px;font-weight:800;color:var(--muted);text-align:center;line-height:1.15}
 .acts{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
 .round.mic2{background:var(--berry)}
+.round.cta{width:132px;height:132px;font-size:62px;border-width:4px;animation:bob .9s ease-in-out infinite alternate}
+.round.cta.go{background:var(--sun)}
 .vid .shield{position:absolute;inset:0;z-index:2;display:grid;place-items:center;background:transparent}
 .vid .shield .vicon{font-size:90px;opacity:0;transition:opacity .25s;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
 .vid .shield.show .vicon{opacity:.95}
@@ -156,8 +158,9 @@ button{cursor:pointer}
 .brk.st-unseen{background:var(--soft);border-style:dashed;box-shadow:none}
 .brk.st-unseen::before,.brk.st-unseen::after{border-style:dashed}
 .brk.st-unseen .be{font-family:var(--f-display);font-weight:800;color:var(--muted)}
-.brk.st-heard{background:var(--card);border-color:var(--hc)}
-.brk.st-heard::before,.brk.st-heard::after{border-color:var(--hc)}
+.brk.st-heard,.brk.st-ready{background:var(--card);border-color:var(--hc)}
+.brk.st-ready{animation:bob .9s ease-in-out infinite alternate}
+.brk.st-heard::before,.brk.st-heard::after,.brk.st-ready::before,.brk.st-ready::after{border-color:var(--hc)}
 .brk.st-strong{box-shadow:0 0 0 4px #FFE48A,3px 3px 0 6px var(--shadow)}
 .reward{font-family:var(--f-display);font-weight:800;font-size:clamp(24px,4vw,32px)}
 .guide{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
@@ -251,7 +254,7 @@ ol.how{margin:0;padding-left:22px;font-size:15px;display:flex;flex-direction:col
 .burst{position:fixed;inset:0;pointer-events:none;display:grid;place-items:center;font-size:140px;z-index:15;opacity:0}
 .burst.go{animation:pop 1s ease-out}
 @keyframes pop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.4)}}
-@media (prefers-reduced-motion:reduce){.vid .shield .vtap,.round.ready,.brickfig .drop,.stop.next,.talking,.choice.wrong,.burst.go,.win{animation:none}}
+@media (prefers-reduced-motion:reduce){.round.cta,.brk.st-ready,.vid .shield .vtap,.round.ready,.brickfig .drop,.stop.next,.talking,.choice.wrong,.burst.go,.win{animation:none}}
 </style>
 </head>
 <body>
@@ -632,7 +635,7 @@ function bindGuide(v,key,items){
 const TIPMODE=new Map([[TIPS.go,"info"],[TIPS.check,"think"],[TIPS.listen,"listen"],[TIPS.recall,"turn"],[TIPS.start,"watch"],[TIPS.watch,"watch"],[TIPS.sceneEnd,"win"],[TIPS.unseen,"info"],[TIPS.sticker,"info"],[TIPS.challengeEnd,"win"],[TIPS.newBrick,"win"],[TIPS.place,"win"],[TIPS.heroDone,"win"]]);
 const G_HOME=[["🗺️","Adventure: watch the show and learn new phrases."],["🎮","Hero Challenge: say the phrases you learned. It opens the day after your first Adventure."],["🧱","Brick Heroes: build 5 secret heroes. Each phrase you say by yourself adds a piece!"],["🔒","Grown-ups: press and hold the lock for 2 seconds."]];
 const G_MAP=[["👆","Tap a circle to watch that part of the show."],["🟢","The bouncing green circle is the next new part."],["⭐","Yellow circles with a star are done. You can watch them again."],["🙂","Small pictures under a circle are the phrases in that part. Gray means not learned yet."],["👂","New phrase: the video stops after it. Listen two times and copy the move."],["🎤","Phrase you know: the video stops before it. You say it first, then hear the hero say it!"],["💡","Stuck? Tap the light bulb for a clue. Said it? Tap the star."]];
-const G_BOOK=[["🧱","Each phrase is a brick. Hear a new phrase in an Adventure to find its brick."],["🎤","A white brick is ready. Say the phrase by yourself (no 💡) and it goes on your hero!"],["🦸","Tap the heroes on top to switch. Each hero is one kind of talking: I need, With friends, Feelings, Fix problems, Ask and care."],["❔","Gray brick: not found yet. Tap it to see where to find it."],["🏆","Put on all the pieces to finish the hero and find out its name!"],["⭐","A gold glow means you know every phrase of that hero really well."]];
+const G_BOOK=[["🧱","Each phrase is a brick. Watch Adventures to find bricks."],["🎤","A bouncing brick is ready. Tap it and say the phrase by yourself to build your hero!"],["🌙","A moon means: you just heard it. Come back tomorrow to build it."],["❔","A gray brick is not found yet. Tap it to go to the show."],["🏆","Finish all the pieces to meet your hero!"]];
 function ansLine(c){return P.answer?`<div class="answer">👨‍👩‍👧 <b>${esc(sayOf(c))}</b>${(c.alt||[]).length?` · also OK: ${esc(c.alt.join(" / "))}`:""}${P.zh?` · <span class="zh">${esc(c.zh)}</span>`:""}</div>`:"";}
 /* one tap to continue */
 function goCard(icon,line,flow){return new Promise(res=>{tipped(TIPS.go,`<div class="cbody"><div class="pic" id="gPic">${esc(icon)}</div></div><div class="cfoot"><span></span><span></span><button class="round go r" id="gGo" aria-label="Go on">▶</button></div>`);
@@ -773,11 +776,11 @@ async function playFromMap(ep,sc,back){
 
 /* ===================== BRICK HEROES book ===================== */
 const PAGE_SAY={needs:"I want. I need.",play:"With friends.",feel:"How I feel.",fix:"Uh-oh! Let's fix it.",ask:"Ask and care."};
-function brickState(id){if(!M[id])return"unseen";if(kind(id)==="strong")return"strong";return passed(id)?"placed":"heard";}
+function brickState(id){if(!M[id])return"unseen";if(kind(id)==="strong")return"strong";if(passed(id))return"placed";return(recallReady(id)||M[id].reteach)?"ready":"heard";}
 function brickBtn(id){const c=CH[id],B=designOf(heroOf(id)),st=brickState(id);
   return`<button class="brk st-${st}" style="--hc:${B.c}" data-c="${esc(id)}" aria-label="${esc(st==="unseen"?"?":sayOf(c))}">
     <span class="be">${st==="unseen"?"?":esc(c.emoji)}</span>
-    ${st==="placed"?'<span class="bb">✓</span>':st==="strong"?'<span class="bb">⭐</span>':st==="heard"?'<span class="bb">🎤</span>':""}
+    ${st==="placed"?'<span class="bb">✓</span>':st==="strong"?'<span class="bb">⭐</span>':st==="ready"?'<span class="bb">🎤</span>':st==="heard"?'<span class="bb">🌙</span>':""}
     ${H[id]&&st!=="unseen"?'<span class="bh">💡</span>':""}</button>${P.answer?`<span class="t">${esc(sayOf(c))}</span>`:""}`;}
 function vBook(v){
   const hs=allHeroes().filter(h=>h.ids.length);
@@ -797,36 +800,25 @@ function vBook(v){
   v.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{sfx("tap");openSticker(b.dataset.c);});
 }
 function sceneOf(src){if(!src||!src.ep)return null;const ep=EPS.find(e=>e.id===src.ep);const sc=ep&&ep.scenes.find(s=>s.id===src.sc);return sc?{ep,sc}:null;}
+/* one brick = one big button. What it does depends on where the child is with that phrase. */
 function openSticker(id){
   const c=CH[id],hh=heroOf(id);const flow=newFlow();STAR=0;openStage("book");
   const srcs=SRC[id]||[];const src=srcs.find(x=>x.ep)||srcs[0]||null;const where=sceneOf(src);
   const mine=new Set(partsFor(hh,id));const names=[...mine].map(p=>PART_NAME[p]).join(" and the ");
-  const fig=()=>`<div class="bigfig" id="sPic">${builderSVG(hh,{placed:placedParts(hh),hi:mine,ghost:true})}</div>`;
-  if(!M[id]){
-    tipped(TIPS.unseen,`<div class="cbody">${fig()}${where?`<div class="pic" style="font-size:60px">👉 ${esc(where.sc.emoji)}</div>`:""}</div>
-      <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">🧱</button><span></span>${where?`<button class="round go r" id="sGo" aria-label="Watch">▶</button>`:"<span></span>"}</div>`);
-    speak(where?`This brick is the ${names}. Find it in this adventure!`:`This brick is the ${names}. Find it in an adventure!`);
-    $("#sBack").onclick=()=>goBack();const g=$("#sGo");if(g)g.onclick=()=>{sfx("tap");runScene(where.ep,where.sc,flow);};
-    return;}
-  const hear=()=>{const h=$("#sHint");if(h)h.innerHTML=`<span>${esc(c.move[0])}</span>`;return src?playLine(src,flow):speak(sayOf(c));};
-  const draw=()=>{tipped(TIPS.sticker,`<div class="cbody">${fig()}
-      <div class="row" style="justify-content:center;gap:10px"><span class="brk st-${brickState(id)}" style="--hc:${designOf(hh).c}"><span class="be">${esc(c.emoji)}</span></span></div>
-      <div class="hint" id="sHint"></div>
-      <div class="acts">
-        <button class="round ear" id="sEar" aria-label="Hear it">👂</button>
-        <button class="round" id="sWhen" aria-label="When do I say it?" style="font-size:30px">${esc(c.hero?c.hero.e:"💬")}</button>
-        ${where?`<button class="round" id="sScene" aria-label="Watch the scene">🎬</button>`:""}
-        <button class="round mic2" id="sTry" aria-label="Try it">🎤</button>
-      </div></div>
-    <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">🧱</button><span></span><span></span></div>${ansLine(c)}`);
-    $("#sEar").onclick=hear;
-    $("#sWhen").onclick=async()=>{const h=$("#sHint");if(h)h.innerHTML=`<span>${esc(c.hero?c.hero.e:"🏠")}</span>`;
-      await speak(c.hero?c.hero.say:c.home);if(flow!==FLOW)return;await speak("You can say:");if(flow!==FLOW)return;hear();};
-    const sc=$("#sScene");if(sc)sc.onclick=()=>{sfx("tap");runScene(where.ep,where.sc,flow);};
-    $("#sTry").onclick=async()=>{sfx("tap");await helpTheHero(id,flow,{counts:false,tag:"Practice"});if(flow===FLOW)draw();};
-    $("#sBack").onclick=()=>goBack();};
-  draw();
-  speak(passed(id)?`This brick is the ${names}. Great job!`:`Say it by yourself to build the ${names}!`).then(()=>{if(flow===FLOW)hear();});
+  const hear=()=>src?playLine(src,flow):speak(sayOf(c));
+  let icon,cls,line,act,auto=false;
+  if(!M[id]){icon="▶";cls="go";line=`Find this brick in the show! Tap play.`;act=()=>{if(where)runScene(where.ep,where.sc,flow);};}
+  else if(passed(id)){icon="👂";cls="ear";line=`This brick is the ${names}. Listen!`;act=hear;auto=true;}
+  else if(recallReady(id)||M[id].reteach){icon="🎤";cls="mic2";line=`Say it by yourself to build the ${names}!`;
+    act=async()=>{const g=(SRC[id]||[]).some(x=>x.say)?freezeAndSpeak:helpTheHero;await g(id,flow,{counts:true,tag:"Build it"});if(flow!==FLOW)return;
+      await showRewards(flow);if(flow!==FLOW)return;goBack();};}
+  else{icon="👂";cls="ear";line=`Listen! Come back tomorrow to build the ${names}.`;act=hear;auto=true;}
+  card(`<div class="cbody"><div class="bigfig" id="sPic">${builderSVG(hh,{placed:placedParts(hh),hi:mine,ghost:true})}</div>
+      <button class="round cta ${cls}" id="sGo" aria-label="Go">${icon}</button></div>
+    <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">🧱</button><span></span><span></span></div>${M[id]?ansLine(c):""}`,null,icon==="🎤"?"turn":icon==="👂"?"listen":"info");
+  $("#sBack").onclick=()=>goBack();
+  $("#sGo").onclick=()=>{sfx("tap");hush();act();};
+  speak(line).then(()=>{if(auto&&flow===FLOW)hear();});
 }
 
 async function runScene(ep,sc,flow){

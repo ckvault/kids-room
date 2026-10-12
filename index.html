@@ -113,6 +113,19 @@ button{cursor:pointer}
 .stk .t{font-size:12px;font-weight:800;color:var(--muted);text-align:center;line-height:1.15}
 .acts{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
 .round.mic2{background:var(--berry)}
+.vid .shield{position:absolute;inset:0;z-index:2;display:grid;place-items:center;background:transparent}
+.vid .shield .vicon{font-size:90px;opacity:0;transition:opacity .25s;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
+.vid .shield.show .vicon{opacity:.95}
+.vid .shield .vtap{position:absolute;width:130px;height:130px;border-radius:50%;font-size:60px;background:var(--sun);color:var(--on-sun);border:4px solid var(--line);box-shadow:3px 3px 0 var(--shadow);display:grid;place-items:center;animation:bob .9s ease-in-out infinite alternate}
+.cstate{display:flex;align-items:center;gap:10px;margin:-16px -16px 4px;padding:10px 16px;border-radius:19px 19px 0 0;font-family:var(--f-display);font-weight:800;font-size:24px;border-bottom:3px solid var(--line)}
+.cstate .si{font-size:30px;line-height:1}
+.cstate .stars{margin-left:auto;font-size:18px;letter-spacing:1px}
+.s-watch{background:var(--sky);color:#fff} .s-listen{background:#7C6CF0;color:#fff} .s-turn{background:var(--berry);color:#fff} .s-think{background:var(--mint);color:var(--on-mint)} .s-win{background:var(--sun);color:var(--on-sun)} .s-info{background:var(--soft);color:var(--ink)}
+#card.arming button{pointer-events:none}
+.round.off{opacity:.35;filter:grayscale(1)}
+.round.ready{animation:readypop .5s ease-out}
+@keyframes readypop{0%{transform:scale(.8)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.btn.confirm{background:var(--berry);color:#fff}
 .door .friend{width:96px;height:132px}
 .brickfig{display:block;width:100%;height:100%;overflow:visible}
 .brickfig .drop{animation:drop .7s cubic-bezier(.3,1.5,.5,1) both}
@@ -238,7 +251,7 @@ ol.how{margin:0;padding-left:22px;font-size:15px;display:flex;flex-direction:col
 .burst{position:fixed;inset:0;pointer-events:none;display:grid;place-items:center;font-size:140px;z-index:15;opacity:0}
 .burst.go{animation:pop 1s ease-out}
 @keyframes pop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.4)}}
-@media (prefers-reduced-motion:reduce){.brickfig .drop,.stop.next,.talking,.choice.wrong,.burst.go,.win{animation:none}}
+@media (prefers-reduced-motion:reduce){.vid .shield .vtap,.round.ready,.brickfig .drop,.stop.next,.talking,.choice.wrong,.burst.go,.win{animation:none}}
 </style>
 </head>
 <body>
@@ -249,8 +262,8 @@ ol.how{margin:0;padding-left:22px;font-size:15px;display:flex;flex-direction:col
   </header>
   <section id="stage" class="stage" hidden>
     <div class="sticker vidcol">
-      <div class="vid"><div id="ytplayer"></div></div>
-      <div class="vctl"><button class="btn sm" id="homeBtn" aria-label="Home">🏠</button><button class="btn sm" id="pauseBtn" aria-label="Play or pause">⏸</button></div>
+      <div class="vid"><div id="ytplayer"></div><div class="shield" id="vShield"><span class="vicon" id="vIcon"></span><button class="vtap" id="vTap" hidden aria-label="Play">▶</button></div></div>
+      <div class="vctl"><button class="btn sm" id="homeBtn" aria-label="Leave">🏠</button></div>
       <p class="note" id="ytNote"></p>
     </div>
     <div class="sticker card" id="card"></div>
@@ -343,17 +356,31 @@ const BUILDERS={
 const PARTS=["base","legs","hips","body","arms","head","face","top"];
 const PART_NAME={base:"stand",legs:"legs",hips:"belt",body:"body",arms:"arms",head:"head",face:"face",top:"hat"};
 function modPhrases(m){return Object.values(CH).filter(c=>c.m===m).map(c=>c.id);}
-function partsFor(m,id){const L=modPhrases(m),n=L.length,i=L.indexOf(id);if(i<0||!n)return[];
-  if(n<=8)return PARTS.slice(Math.floor(i*8/n),Math.floor((i+1)*8/n));return[PARTS[Math.floor(i*8/n)]];}
 function passed(id){return!!(M[id]&&(M[id].best||1)>=2);}
-function placedParts(m,exclude){const L=modPhrases(m),set=new Set();
-  for(const p of PARTS){const ids=L.filter(id=>partsFor(m,id).includes(p));if(ids.length&&ids.every(id=>passed(id)&&!(exclude&&exclude.has(id))))set.add(p);}return set;}
-function heroDone(m){return placedParts(m).size===PARTS.length;}
-function heroGold(m){return heroDone(m)&&modPhrases(m).every(id=>kind(id)==="strong");}
+/* each goal has a series of heroes. A finished hero is sealed (kept as is); new phrases go to the next hero (max 8 bricks). */
+function heroesOf(m){const sealed=(SEAL[m]||[]).map(ids=>ids.filter(id=>CH[id])).filter(a=>a.length);const used=new Set(sealed.flat());
+  const hs=sealed.map((ids,i)=>({m,i,ids,sealed:true}));let rest=modPhrases(m).filter(id=>!used.has(id));
+  while(rest.length){hs.push({m,i:hs.length,ids:rest.slice(0,8),sealed:false});rest=rest.slice(8);}return hs;}
+function allHeroes(){return MODULES.flatMap(mm=>heroesOf(mm.id));}
+function heroKey(h){return h.m+":"+h.i;}
+function heroByKey(k){return allHeroes().find(h=>heroKey(h)===k)||null;}
+function heroOf(id){const c=CH[id];return c?heroesOf(c.m).find(h=>h.ids.includes(id)):null;}
+function partsFor(h,id){const n=h.ids.length,i=h.ids.indexOf(id);if(i<0||!n)return[];return PARTS.slice(Math.floor(i*8/n),Math.floor((i+1)*8/n));}
+function placedParts(h,exclude){const set=new Set();
+  for(const p of PARTS){const ids=h.ids.filter(id=>partsFor(h,id).includes(p));if(ids.length&&ids.every(id=>passed(id)&&!(exclude&&exclude.has(id))))set.add(p);}return set;}
+function heroDone(h){return h.ids.length>0&&placedParts(h).size===PARTS.length;}
+function heroGold(h){return heroDone(h)&&h.ids.every(id=>kind(id)==="strong");}
+function sealDone(){let ch=false;for(const mm of MODULES)for(const h of heroesOf(mm.id))if(!h.sealed&&heroDone(h)){(SEAL[mm.id]=SEAL[mm.id]||[]).push(h.ids.slice());ch=true;}if(ch)save();}
+const HERO_NAMES={needs:["Captain Brick","Rocket Rae","Turbo Tess","Blaze Boy"],play:["Bloxy Bot","Gadget Gus","Beep Buddy","Sparky"],feel:["Heart Knight","Sunny Sue","Glow Girl","Brave Ben"],fix:["Fixer Fred","Builder Bea","Handy Hank","Tool Tina"],ask:["Astro Ask","Comet Cody","Star Scout","Luna Lou"]};
+const TOPS=["cape","antenna","plume","hardhat","space"];
+const PALS=[["#FF5C7A","#4D9DFF","#FFC93C"],["#FFC93C","#2EC4A0","#4D9DFF"],["#8E7CF0","#FF8FA6","#FFC93C"],["#FF8A3D","#4D9DFF","#FFC93C"],["#E9F1FF","#4D9DFF","#FF5C7A"],["#2EC4A0","#FF5C7A","#FFE48A"],["#4D9DFF","#FFC93C","#FF5C7A"]];
+const SKINS=["#F6C9A0","#C9D6E3","#E9B48C","#C68B59","#F1C27D"];
+function designOf(h){const B=BUILDERS[h.m];if(!h.i)return B;const k=h.i,mi=MODULES.findIndex(x=>x.id===h.m),pal=PALS[(mi+k*2)%PALS.length],names=HERO_NAMES[h.m];
+  return{n:names[k]||`${names[0]} ${k+1}`,c:pal[0],c2:pal[1],c3:pal[2],skin:SKINS[(mi+k)%SKINS.length],emb:B.emb,top:TOPS[(TOPS.indexOf(B.top)+k)%TOPS.length]};}
 function starPath(cx,cy,r,ri,n=5){let d="";for(let i=0;i<n*2;i++){const a=-Math.PI/2+i*Math.PI/n,rr=i%2?ri:r;d+=(i?"L":"M")+(cx+rr*Math.cos(a)).toFixed(1)+" "+(cy+rr*Math.sin(a)).toFixed(1);}return d+"Z";}
 /* opts: placed:Set, drop:Set (animate in), hi:Set (highlight; others faded), gold:bool, ghost:bool (outline missing parts) */
-function builderSVG(m,opts={}){
-  const B=BUILDERS[m];const placed=opts.placed||new Set();const ghost=opts.ghost!==false;
+function builderSVG(h,opts={}){
+  const B=designOf(h);const placed=opts.placed||new Set();const ghost=opts.ghost!==false;
   const st=`stroke="${INK}" stroke-width="3" stroke-linejoin="round"`;
   const gst=`fill="none" stroke="#A7B1D3" stroke-width="2.5" stroke-dasharray="5 4"`;
   const studs=(x,y,w,fill)=>{let s="";for(let k=x+6;k+8<=x+w-4;k+=14)s+=`<rect x="${k}" y="${y-5}" width="8" height="6" rx="1.5" fill="${fill}" ${st.replace('3"','2"')}/>`;return s;};
@@ -397,10 +424,10 @@ function builderSVG(m,opts={}){
 /* ===================== data store ===================== */
 const LS="hero-words-v4";
 let CH={},EPS=[],SRC={};
-let M={},H={},DONE={},CUSTOM={chunks:[],episodes:[]};
+let M={},H={},DONE={},SEAL={},CUSTOM={chunks:[],episodes:[]};
 const P={voice:"",speed:1,zh:false,mic:true,answer:true,tips:true,gclosed:{}};
-function load(){try{const d=JSON.parse(localStorage.getItem(LS)||"{}");M=d.mem||{};H=d.help||{};DONE=d.done||{};CUSTOM=d.custom||CUSTOM;Object.assign(P,d.prefs||{});}catch(e){}}
-function save(){try{localStorage.setItem(LS,JSON.stringify({mem:M,help:H,done:DONE,custom:CUSTOM,prefs:P}));}catch(e){toast("Could not save on this device");}}
+function load(){try{const d=JSON.parse(localStorage.getItem(LS)||"{}");M=d.mem||{};H=d.help||{};DONE=d.done||{};SEAL=d.seal||{};CUSTOM=d.custom||CUSTOM;Object.assign(P,d.prefs||{});}catch(e){}}
+function save(){try{localStorage.setItem(LS,JSON.stringify({mem:M,help:H,done:DONE,seal:SEAL,custom:CUSTOM,prefs:P}));}catch(e){toast("Could not save on this device");}}
 function buildIndex(){
   CH={};EPS=[];SRC={};
   for(const c of [...PACK.chunks,...CUSTOM.chunks])CH[c.id]=c;
@@ -429,7 +456,7 @@ function recordRecall(id,level,ctx,counts){
   else{m.streak=0;m.iv=1;m.due=today(1);if(level>=4)m.reteach=true;
     H[id]={since:(H[id]&&H[id].since)||today(),due:today(1),level:Math.max(level,(H[id]&&H[id].level)||0),greens:0};}
   const now=TIER_RANK[kind(id)]||1;if(now>before){m.best=now;if(before<2)REW.push({id,t:"place"});}
-  save();
+  save();sealDone();
 }
 function kind(id){const m=M[id];if(!m)return"new";if(H[id])return"help";if(!m.att||!m.att.length)return"heard";return m.streak>=2?"strong":m.streak>=1?"good":"help";}
 const KINDS=[["new","New"],["heard","Heard"],["help","Needs help"],["good","Said it"],["strong","Strong"]];
@@ -451,8 +478,9 @@ function speak(text,opt={}){return new Promise(res=>{
   const u=new SpeechSynthesisUtterance(text);const v=mainVoice();if(v){u.voice=v;u.lang=v.lang;}else u.lang="en-US";
   u.rate=Math.max(.5,Math.min(1.5,.95*P.speed*(opt.slow?.75:1)));u.pitch=1.08;
   const a=opt.ava;u.onstart=()=>{if(tok===speakTok&&a)a.classList.add("talking");};
-  const done=()=>{if(a)a.classList.remove("talking");res();};u.onend=done;u.onerror=done;
-  setTimeout(()=>{if(tok===speakTok)speechSynthesis.speak(u);else res();},60);});}
+  let fin=false,to=0;const done=()=>{if(fin)return;fin=true;clearTimeout(to);if(a)a.classList.remove("talking");res();};u.onend=done;u.onerror=done;
+  to=setTimeout(done,Math.min(20000,1800+text.length*95/u.rate));   // some browsers never fire onend: never let a flow hang
+  setTimeout(()=>{if(tok===speakTok)speechSynthesis.speak(u);else done();},60);});}
 function hush(){speakTok++;if("speechSynthesis"in window)speechSynthesis.cancel();}
 
 /* ===================== sound fx ===================== */
@@ -462,7 +490,7 @@ function sfx(k){try{actx=actx||new(window.AudioContext||window.webkitAudioContex
 
 /* ===================== mic: shows the child was heard (no scoring) ===================== */
 let micStream=null,micRAF=0,micAn=null;
-async function micOn(el){
+async function micOn(el,onHeard){
   micOff();if(!P.mic||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return;
   try{micStream=micStream&&micStream.active?micStream:await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});
     actx=actx||new(window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")await actx.resume();
@@ -470,7 +498,7 @@ async function micOn(el){
     const buf=new Uint8Array(micAn.fftSize);let loud=0;
     const loop=()=>{if(!document.body.contains(el)){micOff();return;}micAn.getByteTimeDomainData(buf);let sum=0;for(const b of buf){const x=(b-128)/128;sum+=x*x;}
       const rms=Math.sqrt(sum/buf.length);el.style.transform=`scale(${1+Math.min(.35,rms*4)})`;
-      if(rms>.06){loud++;if(loud>6)el.classList.add("heard");}else loud=Math.max(0,loud-1);
+      if(rms>.06){loud++;if(loud>6&&!el.classList.contains("heard")){el.classList.add("heard");onHeard&&onHeard();}}else loud=Math.max(0,loud-1);
       micRAF=requestAnimationFrame(loop);};loop();
   }catch(e){P.mic=false;save();}
 }
@@ -499,17 +527,23 @@ function loadYT(){
 function noCaptions(){try{YTP.unloadModule("captions");YTP.unloadModule("cc");}catch(e){}}
 function initPlayer(){
   if(YTP)return;ytVid=EPS[0]?EPS[0].videoId:V1;
-  const vars={playsinline:1,rel:0,modestbranding:1,controls:1,cc_load_policy:0,iv_load_policy:3};
+  const vars={playsinline:1,rel:0,modestbranding:1,controls:0,disablekb:1,fs:0,cc_load_policy:0,iv_load_policy:3};
   if(/^https?:/.test(location.protocol))vars.origin=location.origin;
   YTP=new YT.Player("ytplayer",{videoId:ytVid,playerVars:vars,events:{
     onReady:()=>{ytReady=true;noCaptions();const p=pending;pending=[];p.forEach(f=>f());},
     onError:e=>{$("#ytNote").innerHTML=`⚠️ This video can't play here (error ${esc(e.data)}). <a href="https://www.youtube.com/watch?v=${encodeURIComponent(ytVid)}" target="_blank" rel="noopener">Open on YouTube</a>`;},
-    onStateChange:e=>{$("#pauseBtn").textContent=e.data===1?"⏸":"▶";if(e.data===1)noCaptions();}}});
+    onStateChange:e=>{if(e.data===1){noCaptions();$("#vTap").hidden=true;clearTimeout(wdT);}shieldIcon();}}});
 }
 function whenReady(fn){if(YTP&&ytReady)fn();else{pending.push(fn);loadYT();}}
 function pauseVideo(){if(YTP&&ytReady)try{if(YTP.getPlayerState()===1)YTP.pauseVideo();}catch(e){}}
-function stopVideo(){clearInterval(timer);timer=null;seg=null;pauseVideo();}
-function startAt(v,s){if(ytVid!==v){ytVid=v;YTP.loadVideoById({videoId:v,startSeconds:s});}else{YTP.seekTo(s,true);YTP.playVideo();}}
+function stopVideo(){clearInterval(timer);timer=null;seg=null;clearTimeout(wdT);$("#vTap").hidden=true;pauseVideo();}
+let wdT=0;
+function startAt(v,s){if(ytVid!==v){ytVid=v;YTP.loadVideoById({videoId:v,startSeconds:s});}else{YTP.seekTo(s,true);YTP.playVideo();}
+  clearTimeout(wdT);wdT=setTimeout(()=>{try{if(seg&&YTP.getPlayerState()!==1){$("#vTap").hidden=false;shieldIcon();}}catch(e){}},2600);}
+$("#vTap").onclick=()=>{$("#vTap").hidden=true;try{YTP.playVideo();}catch(e){}};
+let CARDMODE="info";
+function shieldIcon(){const ic=$("#vIcon");if(!ic)return;let playing=false;try{playing=YTP&&YTP.getPlayerState()===1;}catch(e){}
+  const show=!playing&&$("#vTap").hidden&&["turn","think","win"].includes(CARDMODE);ic.textContent=(MODES[CARDMODE]||MODES.info)[0];$("#vShield").classList.toggle("show",show);}
 function runTimer(){clearInterval(timer);timer=setInterval(tick,150);}
 /* play a stretch; resolves when it reaches the end (or when replaced) */
 function playRange(v,s,e,flow){return new Promise(res=>whenReady(()=>{hush();if(seg&&seg.res)seg.res(false);seg={kind:"range",e,res,flow};startAt(v,Math.max(0,s));runTimer();}));}
@@ -526,8 +560,11 @@ function tick(){
     saved.onEvent(ev).then(()=>{if(saved.flow!==FLOW)return;whenReady(()=>{seg=saved;startAt(saved.v,ev.resume);runTimer();});});return;}
   if(t>=seg.e-.1){YTP.pauseVideo();clearInterval(timer);const r=seg.res;seg=null;r&&r(true);}
 }
-$("#pauseBtn").onclick=()=>{if(!YTP||!ytReady)return;if(YTP.getPlayerState()===1)YTP.pauseVideo();else YTP.playVideo();};
-$("#homeBtn").onclick=()=>goBack();
+/* leaving a lesson takes two taps, so a stray tap doesn't end it */
+function confirmTap(btn,action){if(btn.dataset.armed==="1"){btn.dataset.armed="";action();return;}
+  btn.dataset.armed="1";const old=btn.textContent;btn.textContent="✕ ?";btn.classList.add("confirm");sfx("hint");
+  setTimeout(()=>{if(btn.dataset.armed==="1"){btn.dataset.armed="";btn.textContent=old;btn.classList.remove("confirm");}},2500);}
+$("#homeBtn").onclick=()=>confirmTap($("#homeBtn"),goBack);
 
 /* ===================== app shell ===================== */
 const S={mode:"kid",view:"home",chunk:null};
@@ -560,13 +597,21 @@ function openStage(back){S.back=back||"home";$("#homeBtn").textContent=BACKICON[
 
 /* ===================== card building blocks ===================== */
 let STAR=0;
-function card(html,tip){const c=$("#card");c.innerHTML=`<div class="chead"><span class="eyebrow" id="cTag"></span><span class="stars" id="cStars">${"⭐".repeat(Math.min(STAR,8))}</span></div>${html}${tip&&P.tips!==false?`<p class="tip">${esc(tip)}</p>`:""}`;return c;}
-function tipped(tip,html){return card(html,tip);}
+const MODES={watch:["👀","Watch"],listen:["👂","Listen"],turn:["🎤","Your turn!"],think:["🤔","Think"],win:["🎉","Yay!"],info:["🦸",""]};
+let armT=0;
+function card(html,tip,mode="info"){const c=$("#card");const[ic,lb]=MODES[mode]||MODES.info;CARDMODE=mode;
+  c.innerHTML=`<div class="cstate s-${mode}"><span class="si">${ic}</span><span id="cTag">${lb}</span><span class="stars">${"⭐".repeat(Math.min(STAR,8))}</span></div>${html}${tip&&P.tips!==false?`<p class="tip">${esc(tip)}</p>`:""}`;
+  c.classList.add("arming");clearTimeout(armT);armT=setTimeout(()=>c.classList.remove("arming"),700);   // ignore double taps carried over from the last card
+  shieldIcon();
+  if(innerWidth<860&&S.view==="stage"){const tgt=mode==="watch"||mode==="listen"?$("#stage"):c;setTimeout(()=>tgt.scrollIntoView({behavior:"smooth",block:mode==="watch"||mode==="listen"?"start":"end"}),80);}
+  return c;}
+function winCard(html){return card(html,null,"win");}
+function tipped(tip,html){return card(html,tip,TIPMODE.get(tip)||"info");}
 const TIPS={
   go:"Tap ▶ to go on.",
   check:"Tap the picture that matches what happened. Tap 🦸 to hear the question again.",
   listen:"New phrase! Listen 👂 two times and copy the move. Then tap ▶.",
-  recall:"Your turn! Say it out loud. Stuck? Tap 💡 for a clue: picture → move → first sound → whole line. Said it? Tap ⭐.",
+  recall:"Child says it out loud. The ⭐ lights up when the mic hears a voice (or after a few seconds). Grown-up taps ⭐. Stuck? 💡 gives a clue: picture → move → first sound → whole line.",
   start:"Tap ▶ to watch. The video stops at important lines.",
   watch:"Watch and listen… the video will stop by itself.",
   sceneEnd:"▶ Watch the next part · back button = go back",
@@ -584,6 +629,7 @@ function guideHTML(key,title,items){if(P.tips===false)return"";const closed=P.gc
 function bindGuide(v,key,items){
   const t=v.querySelector(`[data-gtog="${key}"]`);if(t)t.onclick=()=>{P.gclosed=P.gclosed||{};P.gclosed[key]=!P.gclosed[key];save();render();};
   const r=v.querySelector(`[data-gread="${key}"]`);if(r)r.onclick=async()=>{const f=FLOW;for(const[,txt]of items){if(f!==FLOW)return;await speak(txt.replace(/[^\x00-\x7F]+/g," "));}};}
+const TIPMODE=new Map([[TIPS.go,"info"],[TIPS.check,"think"],[TIPS.listen,"listen"],[TIPS.recall,"turn"],[TIPS.start,"watch"],[TIPS.watch,"watch"],[TIPS.sceneEnd,"win"],[TIPS.unseen,"info"],[TIPS.sticker,"info"],[TIPS.challengeEnd,"win"],[TIPS.newBrick,"win"],[TIPS.place,"win"],[TIPS.heroDone,"win"]]);
 const G_HOME=[["🗺️","Adventure: watch the show and learn new phrases."],["🎮","Hero Challenge: say the phrases you learned. It opens the day after your first Adventure."],["🧱","Brick Heroes: build 5 secret heroes. Each phrase you say by yourself adds a piece!"],["🔒","Grown-ups: press and hold the lock for 2 seconds."]];
 const G_MAP=[["👆","Tap a circle to watch that part of the show."],["🟢","The bouncing green circle is the next new part."],["⭐","Yellow circles with a star are done. You can watch them again."],["🙂","Small pictures under a circle are the phrases in that part. Gray means not learned yet."],["👂","New phrase: the video stops after it. Listen two times and copy the move."],["🎤","Phrase you know: the video stops before it. You say it first, then hear the hero say it!"],["💡","Stuck? Tap the light bulb for a clue. Said it? Tap the star."]];
 const G_BOOK=[["🧱","Each phrase is a brick. Hear a new phrase in an Adventure to find its brick."],["🎤","A white brick is ready. Say the phrase by yourself (no 💡) and it goes on your hero!"],["🦸","Tap the heroes on top to switch. Each hero is one kind of talking: I need, With friends, Feelings, Fix problems, Ask and care."],["❔","Gray brick: not found yet. Tap it to see where to find it."],["🏆","Put on all the pieces to finish the hero and find out its name!"],["⭐","A gold glow means you know every phrase of that hero really well."]];
@@ -611,7 +657,11 @@ function listenCard(c,src,flow){return new Promise(res=>{
   draw();play();});}
 /* recall with a hint ladder.  Returns the level reached: 0 = no help ... 4 = needed the full model */
 function recallCard(c,src,opts,flow){return new Promise(res=>{
-  let level=0;const ask=()=>speak(opts.say?`${opts.say} ${opts.q||"What can you say?"}`:(opts.q||"What can you say?"),{ava:$("#rPic")});
+  let level=0,ready=false,busy=false,readyT=0;
+  const q=opts.q||"What can you say?";
+  const enableStar=()=>{if(ready||flow!==FLOW)return;ready=true;const s=$("#rStar");if(s){s.classList.remove("off");s.classList.add("ready");}sfx("hint");};
+  const listen=()=>{if(flow!==FLOW)return;const mic=$("#mic");if(mic&&P.mic)micOn(mic,enableStar);clearTimeout(readyT);readyT=setTimeout(enableStar,P.mic?5000:2500);};
+  const ask=()=>{if(busy)return;busy=true;micOff(true);speak(opts.say?`${opts.say} ${q}`:q,{ava:$("#rPic")}).then(()=>{busy=false;listen();});};
   const draw=()=>{const hints=[];
     if(level>=1)hints.push(`<span>${esc(c.emoji)}</span>`);
     if(level>=2)hints.push(`<span>${esc(c.move[0])}</span>`);
@@ -619,20 +669,23 @@ function recallCard(c,src,opts,flow){return new Promise(res=>{
     tipped(TIPS.recall,`<div class="cbody"><button class="pic" id="rPic" aria-label="Ask again">${esc(opts.pic||"🦸")}</button>
       <div class="hint">${hints.join("")}</div>
       <div class="mic" id="mic" aria-hidden="true">🎤</div></div>
-      <div class="cfoot">${level<4?`<button class="round help l" id="rHelp" aria-label="Help">💡</button>`:`<button class="round ear l" id="rEar" aria-label="Listen again">👂</button>`}<span></span><button class="round star r" id="rStar" aria-label="Did it">⭐</button></div>${ansLine(c)}`);
-    $("#cTag").textContent=opts.tag||"";
-    $("#rPic").onclick=ask;if(level<4)micOn($("#mic"));
-    const h=$("#rHelp");if(h)h.onclick=async()=>{if(flow!==FLOW)return;sfx("hint");level++;draw();
-      if(level===1)speak(`${opts.q||"What can you say?"}`,{ava:$("#rPic")});
-      else if(level===2)speak("Do this!",{ava:$("#rPic")});
-      else if(level===3)speak(cueOf(c),{slow:true,ava:$("#rPic")});
-      else if(level===4){micOff(true);await (src?playLine(src,flow):speak(sayOf(c)));if(flow!==FLOW)return;await speak("Now you say it!");if(flow===FLOW&&$("#mic"))micOn($("#mic"));}};
-    const e=$("#rEar");if(e)e.onclick=()=>src?playLine(src,flow):speak(sayOf(c));
-    $("#rStar").onclick=()=>{if(flow!==FLOW)return;micOff(true);hush();res(level);};};
+      <div class="cfoot">${level<4?`<button class="round help l" id="rHelp" aria-label="Help">💡</button>`:`<button class="round ear l" id="rEar" aria-label="Listen again">👂</button>`}<span></span><button class="round star r${ready?"":" off"}" id="rStar" aria-label="Said it">⭐</button></div>${ansLine(c)}`);
+    if(opts.tag)$("#cTag").textContent=`Your turn! · ${opts.tag}`;
+    $("#rPic").onclick=ask;
+    const h=$("#rHelp");if(h)h.onclick=async()=>{if(busy||flow!==FLOW)return;busy=true;sfx("hint");level++;micOff(true);draw();$("#rHelp")&&$("#rHelp").classList.add("off");
+      if(level===1)await speak(q,{ava:$("#rPic")});
+      else if(level===2)await speak("Do this!",{ava:$("#rPic")});
+      else if(level===3)await speak(cueOf(c),{slow:true,ava:$("#rPic")});
+      else{await (src?playLine(src,flow):speak(sayOf(c)));if(flow!==FLOW)return;await speak("Now you say it!");}
+      if(flow!==FLOW)return;busy=false;$("#rHelp")&&$("#rHelp").classList.remove("off");listen();};
+    const e=$("#rEar");if(e)e.onclick=async()=>{if(busy)return;busy=true;micOff(true);await (src?playLine(src,flow):speak(sayOf(c)));busy=false;listen();};
+    $("#rStar").onclick=()=>{if(flow!==FLOW)return;
+      if(!ready){sfx("wrong");speak("Say it out loud first!");return;}
+      clearTimeout(readyT);micOff(true);hush();res(level);};};
   draw();ask();});}
 async function praise(level,c,src,flow,payoff){
   STAR+=1;celebrate(level===0?"🌟":"⭐");
-  card(`<div class="cbody"><div class="pic win">${level===0?"🌟":"⭐"}</div></div>`);
+  winCard(`<div class="cbody"><div class="pic win">${level===0?"🌟":"⭐"}</div></div>`);
   if(payoff&&src){await wait(500);if(flow!==FLOW)return;await playLine(src,flow);}
   else await speak(level===0?"Wow! You did it!":"Great job!");
 }
@@ -646,16 +699,16 @@ async function showRewards(flow){
   const foot=`<div class="cfoot"><span></span><span></span><button class="round go r" id="rwGo" aria-label="Go on">▶</button></div>`;
   if(fresh.length){if(flow!==FLOW)return;celebrate("🧱");
     tipped(TIPS.newBrick,`<div class="cbody"><div class="reward">${fresh.length>1?"New bricks!":"New brick!"}</div>
-      <div class="brkrow">${fresh.map(id=>`<span class="brk st-heard" style="--hc:${BUILDERS[CH[id].m].c}"><span class="be">${esc(CH[id].emoji)}</span></span>`).join("")}</div></div>${foot}`);
+      <div class="brkrow">${fresh.map(id=>`<span class="brk st-heard" style="--hc:${designOf(heroOf(id)).c}"><span class="be">${esc(CH[id].emoji)}</span></span>`).join("")}</div></div>${foot}`);
     await speak(fresh.length>1?"You found new bricks! Say them by yourself next time, and they go on your hero!":"You found a new brick! Say it by yourself next time, and it goes on your hero!");
     if(flow!==FLOW)return;await tap();}
-  const byMod={};for(const id of placedIds)(byMod[CH[id].m]=byMod[CH[id].m]||[]).push(id);
-  for(const [m,ids] of Object.entries(byMod)){if(flow!==FLOW)return;
-    const before=placedParts(m,new Set(ids)),after=placedParts(m);const drop=new Set([...after].filter(p=>!before.has(p)));
-    const done=after.size===PARTS.length;const B=BUILDERS[m];
+  const byHero={};for(const id of placedIds){const h=heroOf(id);if(h)(byHero[heroKey(h)]=byHero[heroKey(h)]||{h,ids:[]}).ids.push(id);}
+  for(const {h,ids} of Object.values(byHero)){if(flow!==FLOW)return;
+    const before=placedParts(h,new Set(ids)),after=placedParts(h);const drop=new Set([...after].filter(p=>!before.has(p)));
+    const done=after.size===PARTS.length;const B=designOf(h);
     celebrate(done?"🏆":"🧱");
     tipped(done?TIPS.heroDone:TIPS.place,`<div class="cbody"><div class="reward">${done?"Hero complete!":"Click! It fits!"}</div>
-      <div class="bigfig win">${builderSVG(m,{placed:after,drop,gold:heroGold(m)})}</div>
+      <div class="bigfig win">${builderSVG(h,{placed:after,drop,gold:heroGold(h)})}</div>
       <div class="reward">${done?esc(B.n):`${after.size} / ${PARTS.length}`}</div></div>${foot}`);
     const names=[...drop].map(p=>PART_NAME[p]);
     await speak(done?`You built your hero! Say hi to ${B.n}!`:names.length?`Click! The ${names.join(" and the ")} ${names.length>1?"are":"is"} on!`:"Great job! Keep building!");
@@ -666,14 +719,14 @@ async function showRewards(flow){
 function vHome(v){
   const ready=Object.keys(M).filter(id=>CH[id]&&(recallReady(id)||M[id].reteach));
   const helpN=dueHelp().length;const all=Object.keys(CH);const got=all.filter(passed).length;
-  const best=MODULES.map(m=>({m:m.id,n:placedParts(m.id).size,done:heroDone(m.id)})).sort((a,b)=>(a.done-b.done)||(b.n-a.n))[0];
+  const best=allHeroes().filter(h=>h.ids.length).map(h=>({h,n:placedParts(h).size,done:h.sealed})).sort((a,b)=>(a.done-b.done)||(b.n-a.n))[0];
   v.innerHTML=`
   <section class="sticker hello"><button class="pic ava" id="hiAva" aria-label="Say hi">🕷️</button><h2>Hi! Ready to help Spidey?</h2></section>
   ${guideHTML("home","How to play",G_HOME)}
   <div class="doors">
     <button class="door adv sticker" id="dAdv"><span class="em">🗺️</span><h2>Adventure</h2><span class="go">▶</span></button>
     <button class="door game sticker" id="dGame" ${ready.length?"":'data-off="1"'}>${helpN?`<span class="pill">💡 ${helpN}</span>`:""}<span class="em">🎮</span><h2>Hero Challenge</h2><span class="go">⭐</span></button>
-    <button class="door book sticker" id="dBook"><span class="pill sun">🧱 ${got}/${all.length}</span><span class="friend">${builderSVG(best.m,{placed:placedParts(best.m),gold:heroGold(best.m)})}</span><h2>Brick Heroes</h2><span class="go">🔨</span></button>
+    <button class="door book sticker" id="dBook"><span class="pill sun">🧱 ${got}/${all.length}</span><span class="friend">${best?builderSVG(best.h,{placed:placedParts(best.h),gold:heroGold(best.h)}):""}</span><h2>Brick Heroes</h2><span class="go">🔨</span></button>
   </div>`;
   $("#hiAva").onclick=()=>speak("Hi! Ready to help Spidey?",{ava:$("#hiAva")});bindGuide(v,"home",G_HOME);
   $("#dAdv").onclick=()=>{sfx("tap");kidGo("map","Pick an adventure!");};
@@ -721,33 +774,34 @@ async function playFromMap(ep,sc,back){
 /* ===================== BRICK HEROES book ===================== */
 const PAGE_SAY={needs:"I want. I need.",play:"With friends.",feel:"How I feel.",fix:"Uh-oh! Let's fix it.",ask:"Ask and care."};
 function brickState(id){if(!M[id])return"unseen";if(kind(id)==="strong")return"strong";return passed(id)?"placed":"heard";}
-function brickBtn(id){const c=CH[id],B=BUILDERS[c.m],st=brickState(id);
+function brickBtn(id){const c=CH[id],B=designOf(heroOf(id)),st=brickState(id);
   return`<button class="brk st-${st}" style="--hc:${B.c}" data-c="${esc(id)}" aria-label="${esc(st==="unseen"?"?":sayOf(c))}">
     <span class="be">${st==="unseen"?"?":esc(c.emoji)}</span>
     ${st==="placed"?'<span class="bb">✓</span>':st==="strong"?'<span class="bb">⭐</span>':st==="heard"?'<span class="bb">🎤</span>':""}
     ${H[id]&&st!=="unseen"?'<span class="bh">💡</span>':""}</button>${P.answer?`<span class="t">${esc(sayOf(c))}</span>`:""}`;}
 function vBook(v){
-  if(!S.page||!MODULES.find(m=>m.id===S.page))S.page=MODULES[0].id;
+  const hs=allHeroes().filter(h=>h.ids.length);
+  let h=heroByKey(S.page);if(!h||!h.ids.length)h=hs.find(x=>!x.sealed)||hs[0];S.page=heroKey(h);
   const all=Object.keys(CH),got=all.filter(passed).length;
-  const m=S.page,B=BUILDERS[m],L=modPhrases(m),pl=placedParts(m),done=pl.size===PARTS.length;
-  v.innerHTML=`<div class="kidbar"><button class="round nav" id="kHome" aria-label="Home">🏠</button><span class="tally">🧱 ${got} / ${all.length}</span></div>
+  const B=designOf(h),pl=placedParts(h),done=pl.size===PARTS.length,mod=MODULES.find(x=>x.id===h.m);
+  v.innerHTML=`<div class="kidbar"><button class="round nav" id="kHome" aria-label="Home">🏠</button><span class="tally">🧱 ${got} / ${all.length}</span><span class="tally">🏆 ${hs.filter(x=>x.sealed).length}</span></div>
   ${guideHTML("book","How to play: Brick Heroes",G_BOOK)}
-  <div class="htabs">${MODULES.map(mm=>`<button class="htab" data-pg="${mm.id}" aria-current="${mm.id===m}" aria-label="${esc(mm.title)}"><span class="mini">${builderSVG(mm.id,{placed:placedParts(mm.id),gold:heroGold(mm.id)})}</span><span class="me">${mm.emoji}</span>${heroDone(mm.id)?'<span class="ok">✓</span>':""}</button>`).join("")}</div>
+  <div class="htabs">${hs.map(x=>{const mm=MODULES.find(y=>y.id===x.m);return`<button class="htab" data-pg="${heroKey(x)}" aria-current="${heroKey(x)===S.page}" aria-label="${esc(x.sealed?designOf(x).n:mm.title)}"><span class="mini">${builderSVG(x,{placed:placedParts(x),gold:heroGold(x)})}</span><span class="me">${mm.emoji}</span>${x.sealed?'<span class="ok">✓</span>':""}</button>`;}).join("")}</div>
   <section class="sticker build">
-    <div class="fig"><div class="bigfig">${builderSVG(m,{placed:pl,gold:heroGold(m)})}</div>
+    <div class="fig"><div class="bigfig">${builderSVG(h,{placed:pl,gold:heroGold(h)})}</div>
       <div class="reward">${done?esc(B.n):"? ? ?"}</div><div class="pieces">${PARTS.map(p=>`<i class="${pl.has(p)?"on":""}"></i>`).join("")}</div></div>
-    <div class="bricks">${L.map(id=>`<div class="bcell">${brickBtn(id)}</div>`).join("")}</div>
+    <div class="bricks">${h.ids.map(id=>`<div class="bcell">${brickBtn(id)}</div>`).join("")}</div>
   </section>`;
   $("#kHome").onclick=()=>goKid();bindGuide(v,"book",G_BOOK);
-  v.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>{sfx("tap");S.page=b.dataset.pg;render();speak(PAGE_SAY[S.page]||"");});
+  v.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>{sfx("tap");S.page=b.dataset.pg;render();const x=heroByKey(S.page);speak(x&&x.sealed?designOf(x).n:(PAGE_SAY[x&&x.m]||""));});
   v.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{sfx("tap");openSticker(b.dataset.c);});
 }
 function sceneOf(src){if(!src||!src.ep)return null;const ep=EPS.find(e=>e.id===src.ep);const sc=ep&&ep.scenes.find(s=>s.id===src.sc);return sc?{ep,sc}:null;}
 function openSticker(id){
-  const c=CH[id],m=c.m;const flow=newFlow();STAR=0;openStage("book");
+  const c=CH[id],hh=heroOf(id);const flow=newFlow();STAR=0;openStage("book");
   const srcs=SRC[id]||[];const src=srcs.find(x=>x.ep)||srcs[0]||null;const where=sceneOf(src);
-  const mine=new Set(partsFor(m,id));const names=[...mine].map(p=>PART_NAME[p]).join(" and the ");
-  const fig=()=>`<div class="bigfig" id="sPic">${builderSVG(m,{placed:placedParts(m),hi:mine,ghost:true})}</div>`;
+  const mine=new Set(partsFor(hh,id));const names=[...mine].map(p=>PART_NAME[p]).join(" and the ");
+  const fig=()=>`<div class="bigfig" id="sPic">${builderSVG(hh,{placed:placedParts(hh),hi:mine,ghost:true})}</div>`;
   if(!M[id]){
     tipped(TIPS.unseen,`<div class="cbody">${fig()}${where?`<div class="pic" style="font-size:60px">👉 ${esc(where.sc.emoji)}</div>`:""}</div>
       <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">🧱</button><span></span>${where?`<button class="round go r" id="sGo" aria-label="Watch">▶</button>`:"<span></span>"}</div>`);
@@ -756,7 +810,7 @@ function openSticker(id){
     return;}
   const hear=()=>{const h=$("#sHint");if(h)h.innerHTML=`<span>${esc(c.move[0])}</span>`;return src?playLine(src,flow):speak(sayOf(c));};
   const draw=()=>{tipped(TIPS.sticker,`<div class="cbody">${fig()}
-      <div class="row" style="justify-content:center;gap:10px"><span class="brk st-${brickState(id)}" style="--hc:${BUILDERS[m].c}"><span class="be">${esc(c.emoji)}</span></span></div>
+      <div class="row" style="justify-content:center;gap:10px"><span class="brk st-${brickState(id)}" style="--hc:${designOf(hh).c}"><span class="be">${esc(c.emoji)}</span></span></div>
       <div class="hint" id="sHint"></div>
       <div class="acts">
         <button class="round ear" id="sEar" aria-label="Hear it">👂</button>
@@ -804,7 +858,7 @@ async function sceneEvent(ev,flow){
     const c=CH[ev.ln.c];
     const lvl=await recallCard(c,ev.src,{say:ev.ln.say,q:ev.ln.q,pic:charPic(ev.ln.who),tag:"Your turn"},flow);
     if(flow!==FLOW)return;recordRecall(c.id,lvl,"scene",true);
-    STAR++;celebrate(lvl===0?"🌟":"⭐");card(`<div class="cbody"><div class="pic win">${lvl===0?"🌟":"⭐"}</div></div>`);
+    STAR++;celebrate(lvl===0?"🌟":"⭐");winCard(`<div class="cbody"><div class="pic win">${lvl===0?"🌟":"⭐"}</div></div>`);
     await speak(lvl===0?"Yes! Let's hear it!":"Good! Let's hear it!");return;   // resume plays the real line = feedback
   }
   if(ev.note){await goCard("💡",ev.note,flow);if(flow!==FLOW)return;}
@@ -836,7 +890,7 @@ async function helpTheHero(id,flow,o={}){
   const lvl=await recallCard(c,src,{say:c.hero.say,q:"What can you say?",pic:c.hero.e,tag:o.tag||"Help the Hero"},flow);
   if(flow!==FLOW)return;recordRecall(id,lvl,"hero",o.counts!==false);
   STAR++;celebrate(lvl===0?"🌟":"⭐");
-  card(`<div class="cbody"><div class="pic win" id="wPic">${esc(c.hero.win)}</div></div>`);
+  winCard(`<div class="cbody"><div class="pic win" id="wPic">${esc(c.hero.win)}</div></div>`);
   await speak(c.hero.winSay,{ava:$("#wPic")});await wait(300);return lvl;
 }
 
@@ -954,11 +1008,11 @@ function vSettings(v){
   $("#ansT").onchange=e=>{P.answer=e.target.checked;save();};
   $("#zhT").onchange=e=>{P.zh=e.target.checked;save();};
   $("#tipT").onchange=e=>{P.tips=e.target.checked;if(P.tips)P.gclosed={};save();};
-  $("#exp").onclick=()=>{const blob=new Blob([JSON.stringify({app:"hero-words",v:4,mem:M,help:H,done:DONE,custom:CUSTOM,prefs:P})],{type:"application/json"});
+  $("#exp").onclick=()=>{const blob=new Blob([JSON.stringify({app:"hero-words",v:4,mem:M,help:H,done:DONE,seal:SEAL,custom:CUSTOM,prefs:P})],{type:"application/json"});
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hero-words-backup-"+today()+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);toast("Backup saved");};
   $("#impFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(d.app!=="hero-words"||d.v<4)throw 0;
     for(const[k,m]of Object.entries(d.mem||{})){const a=M[k];if(!a||((m.att||[]).length>(a.att||[]).length))M[k]=m;}
-    for(const[k,h]of Object.entries(d.help||{}))if(!H[k])H[k]=h;Object.assign(DONE,d.done||{});
+    for(const[k,h]of Object.entries(d.help||{}))if(!H[k])H[k]=h;Object.assign(DONE,d.done||{});for(const[k,a]of Object.entries(d.seal||{}))if(!(SEAL[k]||[]).length)SEAL[k]=a;
     for(const c of (d.custom&&d.custom.chunks)||[])if(!CUSTOM.chunks.find(x=>x.id===c.id))CUSTOM.chunks.push(c);
     for(const ep of (d.custom&&d.custom.episodes)||[])if(!CUSTOM.episodes.find(x=>x.id===ep.id))CUSTOM.episodes.push(ep);
     save();buildIndex();toast("Backup loaded ✓");render();}catch(err){toast("That file is not a Hero Words backup");}};r.readAsText(f);};

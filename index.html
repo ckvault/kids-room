@@ -68,13 +68,51 @@ button{cursor:pointer}
 .hello{display:flex;align-items:center;gap:16px;padding:16px 20px}
 .hello .ava{font-size:64px}
 .hello h2{font-size:clamp(28px,5vw,44px)}
-.doors{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-@media (max-width:640px){.doors{grid-template-columns:1fr}}
-.door{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px 16px;min-height:280px;border-radius:30px;text-align:center;position:relative}
-.door .em{font-size:110px;line-height:1}
+.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+.door{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px 16px;min-height:240px;border-radius:30px;text-align:center;position:relative}
+.door .em{font-size:96px;line-height:1}
 .door .go{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:44px;border:4px solid var(--line);box-shadow:3px 3px 0 var(--shadow)}
 .door.adv{background:var(--sun);color:var(--on-sun)} .door.adv .go{background:var(--card)}
 .door.game{background:var(--sky);color:#fff} .door.game .go{background:var(--card);color:var(--ink)}
+.door.book{background:var(--mint);color:var(--on-mint)} .door.book .go{background:var(--card);color:var(--ink)}
+.door .pill.sun{background:var(--card);color:var(--ink)}
+
+/* kid sub-pages */
+.kidbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.round.nav{width:72px;height:72px;font-size:34px}
+.tally{font-family:var(--f-display);font-weight:800;font-size:26px}
+.showtabs{display:flex;gap:12px;flex-wrap:wrap}
+.showtab{display:flex;align-items:center;gap:10px;padding:8px;border-radius:18px;border:3px solid var(--line);background:var(--card);box-shadow:3px 3px 0 var(--shadow);font-family:var(--f-display);font-weight:800}
+.showtab img{width:150px;max-width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:2px solid var(--line);display:block}
+.showtab[aria-current="true"]{background:var(--sun);color:var(--on-sun)}
+.map{padding:26px 14px 18px;display:flex;flex-direction:column}
+.mrow{display:flex;align-items:flex-start}
+.mrow .conn{flex:1;min-width:8px;height:0;border-top:6px dashed var(--muted);margin-top:52px;opacity:.45}
+.mrow .conn.off{visibility:hidden}
+.turn{display:flex;height:34px}
+.turn i{display:block;height:100%;border-left:6px dashed var(--muted);opacity:.45}
+.turn.r{justify-content:flex-end;padding-right:52px} .turn.l{justify-content:flex-start;padding-left:52px}
+.stopw{width:110px;flex:none;display:flex;flex-direction:column;align-items:center;gap:6px}
+.stop{width:104px;height:104px;border-radius:50%;border:4px solid var(--line);background:var(--card);box-shadow:3px 3px 0 var(--shadow);display:grid;place-items:center;font-size:48px;position:relative}
+.stop .n{position:absolute;top:-8px;left:-8px;width:32px;height:32px;border-radius:50%;background:var(--sky);color:#fff;border:3px solid var(--line);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:16px}
+.stop.done{background:var(--sun)}
+.stop.done::after{content:"⭐";position:absolute;bottom:-12px;right:-12px;font-size:30px}
+.stop.next{background:var(--mint);animation:bob .9s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.stopw .mini{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;font-size:17px;line-height:1}
+.stopw .lbl{font-size:12px;font-weight:800;color:var(--muted);text-align:center;line-height:1.1}
+.pages{display:flex;gap:10px;flex-wrap:wrap}
+.page{width:78px;height:78px;border-radius:20px;font-size:40px;border:3px solid var(--line);background:var(--card);box-shadow:3px 3px 0 var(--shadow);display:grid;place-items:center}
+.page[aria-current="true"]{background:var(--sun);transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow)}
+.stks{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:20px;padding:22px}
+.stk{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:0;padding:0}
+.stk .disc{width:108px;height:108px;max-width:100%;border-radius:50%;border:4px solid var(--line);display:grid;place-items:center;font-size:54px;box-shadow:3px 3px 0 var(--shadow);position:relative}
+.stk.unseen .disc{background:var(--soft);border-style:dashed;box-shadow:none}
+.stk.unseen .disc .e{filter:grayscale(1);opacity:.3}
+.stk .disc .b{position:absolute;bottom:-10px;right:-10px;font-size:30px}
+.stk .t{font-size:12px;font-weight:800;color:var(--muted);text-align:center;line-height:1.15}
+.acts{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.round.mic2{background:var(--berry)}
 .door[data-off]{filter:grayscale(.7);opacity:.6}
 .door .pill{position:absolute;top:14px;right:14px;background:var(--berry);color:#fff;border:3px solid var(--line);border-radius:999px;padding:2px 12px;font-family:var(--f-display);font-weight:800;font-size:20px}
 
@@ -159,7 +197,7 @@ ol.how{margin:0;padding-left:22px;font-size:15px;display:flex;flex-direction:col
 .burst{position:fixed;inset:0;pointer-events:none;display:grid;place-items:center;font-size:140px;z-index:15;opacity:0}
 .burst.go{animation:pop 1s ease-out}
 @keyframes pop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.4)}}
-@media (prefers-reduced-motion:reduce){.talking,.choice.wrong,.burst.go,.win{animation:none}}
+@media (prefers-reduced-motion:reduce){.stop.next,.talking,.choice.wrong,.burst.go,.win{animation:none}}
 </style>
 </head>
 <body>
@@ -381,7 +419,7 @@ function tick(){
   if(t>=seg.e-.1){YTP.pauseVideo();clearInterval(timer);const r=seg.res;seg=null;r&&r(true);}
 }
 $("#pauseBtn").onclick=()=>{if(!YTP||!ytReady)return;if(YTP.getPlayerState()===1)YTP.pauseVideo();else YTP.playVideo();};
-$("#homeBtn").onclick=()=>goKid();
+$("#homeBtn").onclick=()=>goBack();
 
 /* ===================== app shell ===================== */
 const S={mode:"kid",view:"home",chunk:null};
@@ -390,7 +428,7 @@ function render(){
   const stageOn=S.mode==="kid"&&S.view==="stage";
   $("#stage").hidden=!stageOn;$("#view").hidden=stageOn;
   if(stageOn)return;
-  ({home:vHome,progress:vProgress,shows:vShows,phrases:vPhrases,chunk:vChunk,add:vAdd,settings:vSettings}[S.view]||vHome)($("#view"));
+  ({home:vHome,map:vMap,book:vBook,progress:vProgress,shows:vShows,phrases:vPhrases,chunk:vChunk,add:vAdd,settings:vSettings}[S.view]||vHome)($("#view"));
 }
 function renderNav(){
   const n=$("#nav");
@@ -406,7 +444,11 @@ function bindLock(){const b=$("#lockBtn");let t=null;
   b.addEventListener("pointerdown",start);["pointerup","pointerleave","pointercancel"].forEach(x=>b.addEventListener(x,cancel));
   b.onclick=()=>toast("Grown-ups: press and hold 🔒");}
 function goKid(){newFlow();stopVideo();hush();micOff(true);S.mode="kid";S.view="home";render();window.scrollTo({top:0});}
-function openStage(){S.mode="kid";S.view="stage";render();loadYT();if(innerWidth<860)setTimeout(()=>$("#stage").scrollIntoView({behavior:"smooth"}),50);}
+function goBack(){const b=S.back||"home";newFlow();stopVideo();hush();micOff(true);
+  if(b.startsWith("parent:")){S.mode="parent";S.view=b.slice(7);}else{S.mode="kid";S.view=b;}render();window.scrollTo({top:0});}
+function kidGo(view,line){newFlow();stopVideo();hush();micOff(true);S.mode="kid";S.view=view;render();window.scrollTo({top:0});if(line)speak(line);}
+const BACKICON={map:"🗺️",book:"📖",home:"🏠"};
+function openStage(back){S.back=back||"home";$("#homeBtn").textContent=BACKICON[S.back]||"↩";S.mode="kid";S.view="stage";render();loadYT();if(innerWidth<860)setTimeout(()=>$("#stage").scrollIntoView({behavior:"smooth"}),50);}
 
 /* ===================== card building blocks ===================== */
 let STAR=0;
@@ -464,31 +506,99 @@ async function praise(level,c,src,flow,payoff){
 /* ===================== KID HOME ===================== */
 function vHome(v){
   const ready=Object.keys(M).filter(id=>CH[id]&&(recallReady(id)||M[id].reteach));
-  const helpN=dueHelp().length;const next=nextScene();
+  const helpN=dueHelp().length;const all=Object.keys(CH);const got=all.filter(id=>M[id]).length;
   v.innerHTML=`
   <section class="sticker hello"><button class="pic ava" id="hiAva" aria-label="Say hi">🕷️</button><h2>Hi! Ready to help Spidey?</h2></section>
   <div class="doors">
-    <button class="door adv sticker" id="dAdv"><span class="em">🎬</span><h2>Adventure</h2><span class="go">▶</span></button>
+    <button class="door adv sticker" id="dAdv"><span class="em">🗺️</span><h2>Adventure</h2><span class="go">▶</span></button>
     <button class="door game sticker" id="dGame" ${ready.length?"":'data-off="1"'}>${helpN?`<span class="pill">💡 ${helpN}</span>`:""}<span class="em">🎮</span><h2>Hero Challenge</h2><span class="go">⭐</span></button>
+    <button class="door book sticker" id="dBook"><span class="pill sun">⭐ ${got}/${all.length}</span><span class="em">📖</span><h2>Sticker Book</h2><span class="go">👀</span></button>
   </div>`;
   $("#hiAva").onclick=()=>speak("Hi! Ready to help Spidey?",{ava:$("#hiAva")});
-  $("#dAdv").onclick=()=>{sfx("tap");startAdventure();};
+  $("#dAdv").onclick=()=>{sfx("tap");kidGo("map","Pick an adventure!");};
   $("#dGame").onclick=()=>{sfx("tap");if(!ready.length){speak("Watch an adventure first. Then come back tomorrow for a challenge!");return;}startChallenge();};
+  $("#dBook").onclick=()=>{sfx("tap");kidGo("book","Here are your stickers!");};
 }
 function nextScene(){for(const ep of EPS)for(const sc of ep.scenes)if(!DONE[ep.id+"/"+sc.id])return{ep,sc};return null;}
+function nextIn(ep){return ep.scenes.find(sc=>!DONE[ep.id+"/"+sc.id])||null;}
+function sceneChunks(sc){return[...new Set(sc.stops.flatMap(s=>s.lines.map(l=>l.c)))].filter(id=>CH[id]);}
 
-/* ===================== ADVENTURE: warm-up recall, then one scene ===================== */
-async function startAdventure(){
-  const flow=newFlow();STAR=0;openStage();
-  // warm-up: up to 2 phrases that are due (help list first)
-  const warm=[...new Set([...dueHelp(),...dueRecall()])].filter(id=>(SRC[id]||[]).length).slice(0,2);
-  if(warm.length){await goCard("🔥","Warm up time!",flow);if(flow!==FLOW)return;
-    for(const id of warm){await freezeAndSpeak(id,flow,{tag:"Warm up",counts:true});if(flow!==FLOW)return;}}
-  let n=nextScene();
-  if(!n){await goCard("🎉","You watched them all! Let's watch one again.",flow);if(flow!==FLOW)return;
-    const all=EPS.flatMap(ep=>ep.scenes.map(sc=>({ep,sc})));n=all[Math.floor(Math.random()*all.length)];}
-  await runScene(n.ep,n.sc,flow);
+/* ===================== ADVENTURE MAP: the child picks any stop ===================== */
+function perRow(){const w=Math.min(innerWidth,1200)-70;return w>=820?6:w>=680?5:w>=540?4:w>=400?3:2;}
+function vMap(v){
+  if(!S.ep||!EPS.find(e=>e.id===S.ep))S.ep=(nextScene()||{ep:EPS[0]}).ep.id;
+  const ep=EPS.find(e=>e.id===S.ep);const nx=nextIn(ep);const n=perRow();
+  const stop=x=>{if(!x)return`<div class="stopw" style="visibility:hidden"></div>`;
+    const done=!!DONE[ep.id+"/"+x.sc.id],isNext=nx&&nx.id===x.sc.id;
+    return`<div class="stopw"><button class="stop${done?" done":""}${isNext?" next":""}" data-sc="${esc(x.sc.id)}" aria-label="${esc(x.sc.title)}"><span class="n">${x.i+1}</span>${esc(x.sc.emoji)}</button>
+      <span class="mini">${sceneChunks(x.sc).map(id=>`<span style="${M[id]?"":"filter:grayscale(1);opacity:.35"}">${esc(CH[id].emoji)}</span>`).join("")}</span>
+      ${P.answer?`<span class="lbl">${esc(x.sc.title)}</span>`:""}</div>`;};
+  const rows=[];for(let i=0;i<ep.scenes.length;i+=n)rows.push(ep.scenes.slice(i,i+n).map((sc,k)=>({sc,i:i+k})));
+  let html="";
+  rows.forEach((row,r)=>{const slots=row.slice();while(slots.length<n)slots.push(null);const rev=r%2===1;const ord=rev?slots.slice().reverse():slots;
+    html+=`<div class="mrow">`+ord.map((x,k)=>k===ord.length-1?stop(x):stop(x)+`<span class="conn${x&&ord[k+1]?"":" off"}"></span>`).join("")+`</div>`;
+    if(r<rows.length-1)html+=`<div class="turn ${rev?"l":"r"}"><i></i></div>`;});
+  const thumb=e=>`<img src="https://i.ytimg.com/vi/${encodeURIComponent(e.videoId)}/mqdefault.jpg" alt="">`;
+  v.innerHTML=`<div class="kidbar"><button class="round nav" id="kHome" aria-label="Home">🏠</button>
+    <div class="showtabs">${EPS.map(e=>`<button class="showtab" data-ep="${esc(e.id)}" aria-current="${e.id===ep.id}" aria-label="${esc(e.title)}">${thumb(e)}${P.answer?`<span>${esc(e.title)}</span>`:""}</button>`).join("")}</div></div>
+    <section class="sticker map">${html}</section>`;
+  $("#kHome").onclick=()=>goKid();
+  v.querySelectorAll("[data-ep]").forEach(b=>b.onclick=()=>{sfx("tap");S.ep=b.dataset.ep;render();});
+  v.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>{sfx("tap");playFromMap(ep,ep.scenes.find(s=>s.id===b.dataset.sc),"map");});
 }
+async function playFromMap(ep,sc,back){
+  const flow=newFlow();STAR=0;openStage(back);
+  if(P.warmed!==today()){
+    const here=new Set(sceneChunks(sc));
+    const warm=[...new Set([...dueHelp(),...dueRecall()])].filter(id=>!here.has(id)&&(SRC[id]||[]).length).slice(0,2);
+    if(warm.length){P.warmed=today();save();await goCard("🔥","Warm up time!",flow);if(flow!==FLOW)return;
+      for(const id of warm){await freezeAndSpeak(id,flow,{tag:"Warm up",counts:true});if(flow!==FLOW)return;}}}
+  await runScene(ep,sc,flow);
+}
+
+/* ===================== STICKER BOOK: every phrase, by situation ===================== */
+const PAGE_SAY={needs:"I want. I need.",play:"With friends.",feel:"How I feel.",fix:"Uh-oh! Let's fix it.",ask:"Ask and care."};
+function vBook(v){
+  if(!S.page||!MODULES.find(m=>m.id===S.page))S.page=MODULES[0].id;
+  const all=Object.values(CH);const got=all.filter(c=>M[c.id]).length;const cs=all.filter(c=>c.m===S.page);
+  v.innerHTML=`<div class="kidbar"><button class="round nav" id="kHome" aria-label="Home">🏠</button><span class="tally">⭐ ${got} / ${all.length}</span></div>
+  <div class="pages">${MODULES.map(m=>`<button class="page" data-pg="${m.id}" aria-current="${m.id===S.page}" aria-label="${esc(m.title)}">${m.emoji}</button>`).join("")}</div>
+  <section class="sticker stks">${cs.map(c=>{const seen=!!M[c.id],k=kind(c.id);return`<button class="stk${seen?"":" unseen"}" data-c="${esc(c.id)}" aria-label="${esc(sayOf(c))}">
+    <span class="disc ${seen?"k-"+k:""}"><span class="e">${esc(c.emoji)}</span>${seen&&k==="strong"?'<span class="b">⭐</span>':seen&&H[c.id]?'<span class="b">💡</span>':""}</span>
+    ${P.answer?`<span class="t">${esc(sayOf(c))}</span>`:""}</button>`;}).join("")}</section>`;
+  $("#kHome").onclick=()=>goKid();
+  v.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>{sfx("tap");S.page=b.dataset.pg;render();speak(PAGE_SAY[S.page]||"");});
+  v.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{sfx("tap");openSticker(b.dataset.c);});
+}
+function sceneOf(src){if(!src||!src.ep)return null;const ep=EPS.find(e=>e.id===src.ep);const sc=ep&&ep.scenes.find(s=>s.id===src.sc);return sc?{ep,sc}:null;}
+function openSticker(id){
+  const c=CH[id];const flow=newFlow();STAR=0;openStage("book");
+  const srcs=SRC[id]||[];const src=srcs.find(x=>x.ep)||srcs[0]||null;const where=sceneOf(src);
+  if(!M[id]){
+    card(`<div class="cbody"><div class="pic" id="sPic" style="filter:grayscale(1);opacity:.4">${esc(c.emoji)}</div>${where?`<div class="pic" style="font-size:64px">👉 ${esc(where.sc.emoji)}</div>`:""}</div>
+      <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">📖</button><span></span>${where?`<button class="round go r" id="sGo" aria-label="Watch">▶</button>`:"<span></span>"}</div>`);
+    speak(where?"Find me in this adventure!":"Find me in an adventure!",{ava:$("#sPic")});
+    $("#sBack").onclick=()=>goBack();const g=$("#sGo");if(g)g.onclick=()=>{sfx("tap");runScene(where.ep,where.sc,flow);};
+    return;}
+  const hear=()=>{const h=$("#sHint");if(h)h.innerHTML=`<span>${esc(c.move[0])}</span>`;return src?playLine(src,flow):speak(sayOf(c),{ava:$("#sPic")});};
+  const draw=()=>{card(`<div class="cbody"><button class="pic" id="sPic" aria-label="Hear it">${esc(c.emoji)}</button>
+      <div class="hint" id="sHint"></div>
+      <div class="acts">
+        <button class="round ear" id="sEar" aria-label="Hear it">👂</button>
+        <button class="round" id="sWhen" aria-label="When do I say it?" style="font-size:30px">${esc(c.hero?c.hero.e:"💬")}</button>
+        ${where?`<button class="round" id="sScene" aria-label="Watch the scene">🎬</button>`:""}
+        <button class="round mic2" id="sTry" aria-label="Try it">🎤</button>
+      </div></div>
+    <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">📖</button><span></span><span></span></div>${ansLine(c)}`);
+    $("#sPic").onclick=hear;$("#sEar").onclick=hear;
+    $("#sWhen").onclick=async()=>{const h=$("#sHint");if(h)h.innerHTML=`<span>${esc(c.hero?c.hero.e:"🏠")}</span>`;
+      await speak(c.hero?c.hero.say:c.home,{ava:$("#sPic")});if(flow!==FLOW)return;await speak("You can say:");if(flow!==FLOW)return;hear();};
+    const sc=$("#sScene");if(sc)sc.onclick=()=>{sfx("tap");runScene(where.ep,where.sc,flow);};
+    $("#sTry").onclick=async()=>{sfx("tap");await helpTheHero(id,flow,{counts:false,tag:"Practice"});if(flow===FLOW)draw();};
+    $("#sBack").onclick=()=>goBack();};
+  draw();hear();
+}
+
 async function runScene(ep,sc,flow){
   card(`<div class="cbody"><div class="pic">${esc(sc.emoji)}</div><h2>${esc(sc.title)}</h2></div><div class="cfoot"><span></span><span></span><button class="round go r" id="sGo" aria-label="Watch">▶</button></div>`);
   await new Promise(r=>$("#sGo").onclick=()=>{sfx("tap");r();});if(flow!==FLOW)return;
@@ -504,10 +614,13 @@ async function runScene(ep,sc,flow){
   const ok=await playScene(ep,sc.start,sc.end,events,ev=>sceneEvent(ev,flow),flow);
   if(flow!==FLOW||ok===false)return;
   DONE[ep.id+"/"+sc.id]=today();save();celebrate("🏆");
-  card(`<div class="cbody"><div class="pic win">🏆</div><div class="stars">${"⭐".repeat(Math.min(STAR,10))}</div></div>
-    <div class="cfoot"><span></span><span></span><button class="round go r" id="eHome" aria-label="Home">🏠</button></div>`);
-  speak(STAR?"Amazing! You helped Spidey!":"Great watching! See you next time!");
-  $("#eHome").onclick=()=>goKid();
+  const nx=nextIn(ep);
+  card(`<div class="cbody"><div class="pic win">🏆</div><div class="stars">${"⭐".repeat(Math.min(STAR,10))}</div>${nx?`<div class="pic" style="font-size:56px">${esc(nx.emoji)}</div>`:""}</div>
+    <div class="cfoot"><button class="round help l" id="eBack" aria-label="Back">${BACKICON[S.back]||"↩"}</button><span></span>${nx?`<button class="round go r" id="eNext" aria-label="Next adventure">▶</button>`:`<button class="round go r" id="eHome" aria-label="Home">🏠</button>`}</div>`);
+  speak(STAR?"Amazing! You helped Spidey!":"Great watching!");
+  $("#eBack").onclick=()=>goBack();
+  const en=$("#eNext");if(en)en.onclick=()=>{sfx("tap");runScene(ep,nx,flow);};
+  const eh=$("#eHome");if(eh)eh.onclick=()=>goKid();
 }
 async function sceneEvent(ev,flow){
   if(ev.type==="recall"){
@@ -552,7 +665,7 @@ async function helpTheHero(id,flow,o={}){
 
 /* ===================== HERO CHALLENGE: 5-6 recalls, failed ones come back after one other ===================== */
 async function startChallenge(){
-  const flow=newFlow();STAR=0;openStage();
+  const flow=newFlow();STAR=0;openStage("home");
   const ready=Object.keys(M).filter(id=>CH[id]&&(recallReady(id)||M[id].reteach));
   const help=dueHelp(),due=dueRecall().filter(id=>!help.includes(id));
   const rest=shuffle(ready.filter(id=>!help.includes(id)&&!due.includes(id))).sort((a,b)=>(M[a].due<M[b].due?-1:1));
@@ -603,7 +716,7 @@ function vShows(v){
   <div class="grid">${ep.scenes.map(sc=>{const ids=[...new Set(sc.stops.flatMap(s=>s.lines.map(l=>l.c)))];return`
     <button class="sticker scene" data-ep="${esc(ep.id)}" data-sc="${esc(sc.id)}">${DONE[ep.id+"/"+sc.id]?'<span class="done">✓</span>':""}
     <span class="em">${esc(sc.emoji)}</span><h3>${esc(sc.title)}</h3><span class="chips">${ids.map(id=>CH[id]?`<span class="chip k-${kind(id)}">${esc(CH[id].emoji)}</span>`:"").join("")}</span></button>`;}).join("")}</div>`).join("")+`<section class="sticker box">${legend()}<p class="note">Tap a scene to play it with your child.</p></section>`;
-  v.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>{const ep=EPS.find(e=>e.id===b.dataset.ep);const sc=ep.scenes.find(s=>s.id===b.dataset.sc);const flow=newFlow();STAR=0;openStage();runScene(ep,sc,flow);});
+  v.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>{const ep=EPS.find(e=>e.id===b.dataset.ep);const sc=ep.scenes.find(s=>s.id===b.dataset.sc);const flow=newFlow();STAR=0;openStage("parent:shows");runScene(ep,sc,flow);});
 }
 
 /* ===================== PARENT: phrases ===================== */
@@ -626,10 +739,10 @@ function vChunk(v){
   <section class="sticker box"><h3>Clips</h3><div class="row">${srcs.map((s,i)=>`<button class="btn sm" data-src="${i}">🎬 ${esc(s.who||"Clip")}: “${esc(s.text||"")}”</button>`).join("")||`<span class="note">No clip yet.</span>`}</div></section>
   <section class="sticker box"><h3>Try with your child</h3><div class="row"><button class="btn sun" id="tryF" ${srcs.length?"":"disabled"}>🎬 Freeze & Speak</button><button class="btn sky" id="tryH">🦸 Help the Hero</button></div><p class="note">Practice runs do not change the schedule.</p></section>`;
   $("#back").onclick=()=>{S.view="phrases";render();};
-  v.querySelectorAll("[data-src]").forEach(b=>b.onclick=()=>{const flow=newFlow();openStage();card(`<div class="cbody"><div class="pic">🎬</div></div><div class="cfoot"><span></span><span></span><button class="round go r" id="bk" aria-label="Back">↩</button></div>`);$("#bk").onclick=()=>{newFlow();stopVideo();S.mode="parent";S.view="chunk";render();};playLine(srcs[+b.dataset.src],flow);});
+  v.querySelectorAll("[data-src]").forEach(b=>b.onclick=()=>{const flow=newFlow();openStage("parent:chunk");card(`<div class="cbody"><div class="pic">🎬</div></div><div class="cfoot"><span></span><span></span><button class="round go r" id="bk" aria-label="Back">↩</button></div>`);$("#bk").onclick=()=>{newFlow();stopVideo();S.mode="parent";S.view="chunk";render();};playLine(srcs[+b.dataset.src],flow);});
   const back=()=>{S.mode="parent";S.view="chunk";render();};
-  $("#tryF").onclick=async()=>{const flow=newFlow();STAR=0;openStage();await freezeAndSpeak(c.id,flow,{counts:false,tag:"Practice"});if(flow===FLOW){stopVideo();back();}};
-  $("#tryH").onclick=async()=>{const flow=newFlow();STAR=0;openStage();await helpTheHero(c.id,flow,{counts:false,tag:"Practice"});if(flow===FLOW){stopVideo();back();}};
+  $("#tryF").onclick=async()=>{const flow=newFlow();STAR=0;openStage("parent:chunk");await freezeAndSpeak(c.id,flow,{counts:false,tag:"Practice"});if(flow===FLOW){stopVideo();back();}};
+  $("#tryH").onclick=async()=>{const flow=newFlow();STAR=0;openStage("parent:chunk");await helpTheHero(c.id,flow,{counts:false,tag:"Practice"});if(flow===FLOW){stopVideo();back();}};
 }
 
 /* ===================== PARENT: settings & backup ===================== */
@@ -742,6 +855,7 @@ function importPack(d){
   save();buildIndex();return{title:str(ep.title)||"New show",scenes:scenes.length,newChunks:newC};
 }
 
+let rsT;addEventListener("resize",()=>{clearTimeout(rsT);rsT=setTimeout(()=>{if(S.mode==="kid"&&S.view==="map")render();},250);});
 /* ===================== boot ===================== */
 load();buildIndex();render();
 </script>

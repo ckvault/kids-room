@@ -113,16 +113,39 @@ button{cursor:pointer}
 .stk .t{font-size:12px;font-weight:800;color:var(--muted);text-align:center;line-height:1.15}
 .acts{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
 .round.mic2{background:var(--berry)}
-.chibi{display:block;width:100%;height:100%;overflow:visible}
-.stk .disc svg{width:100px;height:100px}
-.stk .disc{overflow:visible}
-.stk.unseen .disc svg{filter:brightness(0) opacity(.18)}
-.stk .disc .q{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:44px;color:var(--muted)}
-.stk .disc .pe{position:absolute;bottom:-8px;left:-8px;width:40px;height:40px;border-radius:50%;background:var(--card);border:2px solid var(--line);display:grid;place-items:center;font-size:22px}
-.stk .nm{font-family:var(--f-display);font-weight:800;font-size:14px;text-align:center;line-height:1.1}
-.bigchibi{width:min(190px,48vw);height:auto;aspect-ratio:120/124;background:none;border:0;padding:0}
-.bigchibi.sil svg{filter:brightness(0) opacity(.2)}
-.door .friend{width:112px;height:116px}
+.door .friend{width:96px;height:132px}
+.brickfig{display:block;width:100%;height:100%;overflow:visible}
+.brickfig .drop{animation:drop .7s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes drop{from{transform:translateY(-46px);opacity:0}to{transform:none;opacity:1}}
+.bigfig{width:min(170px,42vw);aspect-ratio:120/166;max-width:100%}
+.htabs{display:flex;gap:10px;flex-wrap:wrap}
+.htab{position:relative;width:88px;height:104px;border-radius:20px;border:3px solid var(--line);background:var(--card);box-shadow:3px 3px 0 var(--shadow);display:grid;place-items:center;padding:6px}
+.htab .mini{width:56px;height:78px}
+.htab .me{position:absolute;bottom:-10px;left:-8px;font-size:22px;width:34px;height:34px;border-radius:50%;background:var(--card);border:2px solid var(--line);display:grid;place-items:center}
+.htab .ok{position:absolute;top:-10px;right:-8px;width:28px;height:28px;border-radius:50%;background:var(--mint);color:var(--on-mint);border:2px solid var(--line);display:grid;place-items:center;font-size:15px}
+.htab[aria-current="true"]{background:var(--sun);transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow)}
+.build{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;padding:22px}
+@media (max-width:600px){.build{grid-template-columns:1fr;justify-items:center}}
+.fig{display:flex;flex-direction:column;align-items:center;gap:8px}
+.pieces{display:flex;gap:5px}
+.pieces i{width:16px;height:12px;border-radius:3px;border:2px solid var(--line);background:var(--soft)}
+.pieces i.on{background:var(--sun)}
+.bricks{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:24px 16px;padding-top:10px}
+.bcell{display:flex;flex-direction:column;align-items:center;gap:6px}
+.bcell .t{font-size:12px;font-weight:800;color:var(--muted);text-align:center;line-height:1.15}
+.brkrow{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;padding-top:10px}
+.brk{position:relative;width:104px;height:66px;border-radius:10px;border:3px solid var(--line);background:var(--hc);box-shadow:3px 3px 0 var(--shadow);display:grid;place-items:center;padding:0}
+.brk::before,.brk::after{content:"";position:absolute;top:-11px;width:24px;height:10px;border:3px solid var(--line);border-bottom:0;border-radius:6px 6px 0 0;background:inherit}
+.brk::before{left:16px} .brk::after{right:16px}
+.brk .be{font-size:34px;line-height:1}
+.brk .bb{position:absolute;bottom:-12px;right:-10px;width:30px;height:30px;border-radius:50%;background:var(--card);border:2px solid var(--line);display:grid;place-items:center;font-size:16px}
+.brk .bh{position:absolute;top:-14px;right:-12px;font-size:24px}
+.brk.st-unseen{background:var(--soft);border-style:dashed;box-shadow:none}
+.brk.st-unseen::before,.brk.st-unseen::after{border-style:dashed}
+.brk.st-unseen .be{font-family:var(--f-display);font-weight:800;color:var(--muted)}
+.brk.st-heard{background:var(--card);border-color:var(--hc)}
+.brk.st-heard::before,.brk.st-heard::after{border-color:var(--hc)}
+.brk.st-strong{box-shadow:0 0 0 4px #FFE48A,3px 3px 0 6px var(--shadow)}
 .reward{font-family:var(--f-display);font-weight:800;font-size:clamp(24px,4vw,32px)}
 .guide{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
 .guide .gh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -215,7 +238,7 @@ ol.how{margin:0;padding-left:22px;font-size:15px;display:flex;flex-direction:col
 .burst{position:fixed;inset:0;pointer-events:none;display:grid;place-items:center;font-size:140px;z-index:15;opacity:0}
 .burst.go{animation:pop 1s ease-out}
 @keyframes pop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.4)}}
-@media (prefers-reduced-motion:reduce){.stop.next,.talking,.choice.wrong,.burst.go,.win{animation:none}}
+@media (prefers-reduced-motion:reduce){.brickfig .drop,.stop.next,.talking,.choice.wrong,.burst.go,.win{animation:none}}
 </style>
 </head>
 <body>
@@ -308,107 +331,67 @@ const PACK={
  ]}]
 };
 
-/* ===================== HERO FRIENDS: original chibi sticker characters ===================== */
+/* ===================== BRICK HEROES: one secret hero per goal, built piece by piece ===================== */
 const INK="#1B2340";
-const HERO_CHARS={
- "want-to":{n:"Captain Pip",s:"kid",c:"#4D9DFF",c2:"#FF5C7A",skin:"#F6C9A0",hair:"#5B3A29",acc:"mask",m:"open"},
- "need-please":{n:"Gizmo Bot",s:"robot",c:"#9DB4C9",c2:"#FFC93C"},
- "im-stuck":{n:"Ziggy Frog",s:"frog",c:"#6FD36F",c2:"#FF8C42",acc:"headband",m:"open"},
- "check-it-out":{n:"Scout Owl",s:"owl",c:"#A47148",c2:"#F3D9B1",acc:"goggles",g:"#4D9DFF"},
- "lets-play":{n:"Buddy Pup",s:"dog",c:"#E8B36B",c2:"#8A5A33",acc:"headband",hb:"#FF5C7A",m:"open"},
- "here-you-go":{n:"Hop Star",s:"bunny",c:"#F4F0FF",c2:"#FF9EC4"},
- "thank-you":{n:"Coco Bear",s:"bear",c:"#B7835A",c2:"#F2D2B0"},
- "youre-welcome":{n:"Luna Cat",s:"cat",c:"#8E7CF0",c2:"#FFD84D",acc:"mask"},
- "together":{n:"Max Monkey",s:"monkey",c:"#9A6B4F",c2:"#F2C9A0",acc:"headband",hb:"#2EC4A0",m:"open"},
- "we-can-do-this":{n:"Mighty Mia",s:"kid",c:"#FF5C7A",c2:"#FFC93C",skin:"#E9B48C",hair:"#2B1B14",acc:"mask",pony:1},
- "its-hot":{n:"Blaze Fox",s:"fox",c:"#FF8A3D",c2:"#FFF4E6",acc:"goggles",g:"#FFC93C"},
- "so-cold":{n:"Snowy Penguin",s:"penguin",c:"#2E3A5C",c2:"#FFFFFF",acc:"headband",hb:"#6AE3FF"},
- "ew-gross":{n:"Ooze Dino",s:"dino",c:"#8CD867",c2:"#3E9E4A",m:"open"},
- "feels-good":{n:"Sunny Kitty",s:"cat",c:"#FFC93C",c2:"#FF8FA6"},
- "oh-no":{n:"Turbo Tom",s:"kid",c:"#2EC4A0",c2:"#4D9DFF",skin:"#F1C27D",hair:"#E0A030",acc:"helmet",m:"open"},
- "give-back":{n:"Rex Rumble",s:"dino",c:"#4D9DFF",c2:"#2B6CD4",acc:"mask"},
- "sorry-help":{n:"Patch Pup",s:"dog",c:"#FFFFFF",c2:"#3A3A3A",spot:1},
- "you-go-first":{n:"Pando",s:"panda",c:"#FFFFFF",c2:"#2B2B2B"},
- "now-you":{n:"Zip Bot",s:"robot",c:"#FF7A8A",c2:"#FFC93C",m:"open"},
- "take-turns":{n:"Nova Cat",s:"cat",c:"#3A3F5C",c2:"#6AE3FF",acc:"goggles",g:"#6AE3FF"},
- "look-out":{n:"Ace Owl",s:"owl",c:"#6C8BD6",c2:"#DCE7FF",acc:"mask",mc:"#FFC93C"},
- "got-ya":{n:"Captain Koa",s:"kid",c:"#FFC93C",c2:"#4D9DFF",skin:"#C68B59",hair:"#1B1B1B",acc:"headband",hb:"#FF5C7A",m:"open"},
- "whats-this":{n:"Sky Fox",s:"fox",c:"#6AAEFF",c2:"#FFFFFF",acc:"helmet",hc:"#FFC93C"},
- "are-you-okay":{n:"Daisy Bunny",s:"bunny",c:"#FFD6E8",c2:"#FF5C7A",acc:"headband",hb:"#FFC93C"}
+const BUILDERS={
+  needs:{n:"Captain Brick",c:"#FF5C7A",c2:"#4D9DFF",c3:"#FFC93C",skin:"#F6C9A0",emb:"star",top:"cape"},
+  play:{n:"Bloxy Bot",c:"#FFC93C",c2:"#2EC4A0",c3:"#4D9DFF",skin:"#C9D6E3",emb:"bolt",top:"antenna"},
+  feel:{n:"Heart Knight",c:"#8E7CF0",c2:"#FF8FA6",c3:"#FFC93C",skin:"#E9B48C",emb:"heart",top:"plume"},
+  fix:{n:"Fixer Fred",c:"#FF8A3D",c2:"#4D9DFF",c3:"#FFC93C",skin:"#C68B59",emb:"wrench",top:"hardhat"},
+  ask:{n:"Astro Ask",c:"#E9F1FF",c2:"#4D9DFF",c3:"#FF5C7A",skin:"#F1C27D",emb:"question",top:"space"}
 };
-function hashOf(s){let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
-function chibiFor(id){
-  if(HERO_CHARS[id])return HERO_CHARS[id];
-  const h=hashOf(id),pick=(a,k)=>a[(h>>>k)%a.length];
-  const s=pick(["kid","cat","dog","fox","bear","bunny","robot","dino","penguin","owl","frog","monkey","panda"],0);
-  const pal=[["#4D9DFF","#FF5C7A"],["#2EC4A0","#FFC93C"],["#FF8A3D","#FFF4E6"],["#8E7CF0","#FFD84D"],["#FF7A8A","#4D9DFF"],["#6FD36F","#FF8C42"],["#B7835A","#F2D2B0"]];
-  const [c,c2]=pick(pal,5);
-  const names={kid:"Kid",cat:"Cat",dog:"Pup",fox:"Fox",bear:"Bear",bunny:"Bunny",robot:"Bot",dino:"Dino",penguin:"Penguin",owl:"Owl",frog:"Frog",monkey:"Monkey",panda:"Panda"};
-  return{n:pick(["Captain","Super","Mighty","Turbo","Little","Sky","Star","Rocket"],9)+" "+names[s],s,c,c2,skin:pick(["#F6C9A0","#E9B48C","#C68B59","#F1C27D"],13),hair:pick(["#5B3A29","#2B1B14","#E0A030","#1B1B1B"],15),acc:pick(["mask","headband","goggles","helmet",""],17),m:pick(["","open"],21)};
-}
+const PARTS=["base","legs","hips","body","arms","head","face","top"];
+const PART_NAME={base:"stand",legs:"legs",hips:"belt",body:"body",arms:"arms",head:"head",face:"face",top:"hat"};
+function modPhrases(m){return Object.values(CH).filter(c=>c.m===m).map(c=>c.id);}
+function partsFor(m,id){const L=modPhrases(m),n=L.length,i=L.indexOf(id);if(i<0||!n)return[];
+  if(n<=8)return PARTS.slice(Math.floor(i*8/n),Math.floor((i+1)*8/n));return[PARTS[Math.floor(i*8/n)]];}
+function passed(id){return!!(M[id]&&(M[id].best||1)>=2);}
+function placedParts(m,exclude){const L=modPhrases(m),set=new Set();
+  for(const p of PARTS){const ids=L.filter(id=>partsFor(m,id).includes(p));if(ids.length&&ids.every(id=>passed(id)&&!(exclude&&exclude.has(id))))set.add(p);}return set;}
+function heroDone(m){return placedParts(m).size===PARTS.length;}
+function heroGold(m){return heroDone(m)&&modPhrases(m).every(id=>kind(id)==="strong");}
 function starPath(cx,cy,r,ri,n=5){let d="";for(let i=0;i<n*2;i++){const a=-Math.PI/2+i*Math.PI/n,rr=i%2?ri:r;d+=(i?"L":"M")+(cx+rr*Math.cos(a)).toFixed(1)+" "+(cy+rr*Math.sin(a)).toFixed(1);}return d+"Z";}
-function chibiSVG(ch,tier){
-  const o=[],s=ch.s,C=ch.c,C2=ch.c2,st=`stroke="${INK}" stroke-width="3" stroke-linejoin="round"`;
-  const skin=s==="kid"?ch.skin:C;
-  if(tier==="star")o.push(`<path d="${starPath(60,64,62,42,12)}" fill="#FFE48A" opacity=".9"/>`);
-  if(tier==="cape"||tier==="star")o.push(`<path d="M40 80 L20 116 Q60 106 100 116 L80 80 Z" fill="${C2==="#FFFFFF"||C2==="#FFF4E6"?"#FF5C7A":C2}" ${st}/>`);
-  // feet, body, arms
-  const bodyC=s==="kid"?C:(s==="penguin"?C:C);
-  o.push(`<ellipse cx="48" cy="112" rx="9" ry="5" fill="${bodyC}" ${st}/><ellipse cx="72" cy="112" rx="9" ry="5" fill="${bodyC}" ${st}/>`);
-  o.push(`<rect x="38" y="78" width="44" height="32" rx="15" fill="${bodyC}" ${st}/>`);
-  if(s==="penguin")o.push(`<ellipse cx="60" cy="95" rx="13" ry="12" fill="${C2}"/>`);
-  if(s==="kid"||ch.acc==="mask")o.push(`<path d="${starPath(60,94,8,3.6)}" fill="#FFE48A" ${st.replace('3"','2"')}/>`);
-  o.push(`<ellipse cx="36" cy="91" rx="6" ry="9" fill="${s==="kid"?skin:bodyC}" ${st}/><ellipse cx="84" cy="91" rx="6" ry="9" fill="${s==="kid"?skin:bodyC}" ${st}/>`);
-  // ears / things behind the head
-  if(s==="cat"||s==="fox"){const tip=s==="fox"?6:10;o.push(`<path d="M28 42 L30 ${tip} L56 24 Z" fill="${C}" ${st}/><path d="M92 42 L90 ${tip} L64 24 Z" fill="${C}" ${st}/><path d="M34 34 L35 ${tip+10} L47 26 Z" fill="${s==="fox"?C2:"#FF9EC4"}"/><path d="M86 34 L85 ${tip+10} L73 26 Z" fill="${s==="fox"?C2:"#FF9EC4"}"/>`);}
-  if(s==="bear"||s==="panda")o.push(`<circle cx="31" cy="24" r="12" fill="${s==="panda"?C2:C}" ${st}/><circle cx="89" cy="24" r="12" fill="${s==="panda"?C2:C}" ${st}/>${s==="bear"?`<circle cx="31" cy="24" r="6" fill="${C2}"/><circle cx="89" cy="24" r="6" fill="${C2}"/>`:""}`);
-  if(s==="monkey")o.push(`<circle cx="23" cy="56" r="12" fill="${C}" ${st}/><circle cx="97" cy="56" r="12" fill="${C}" ${st}/><circle cx="23" cy="56" r="6" fill="${C2}"/><circle cx="97" cy="56" r="6" fill="${C2}"/>`);
-  if(s==="bunny")o.push(`<ellipse cx="45" cy="12" rx="9" ry="22" fill="${C}" ${st}/><ellipse cx="75" cy="12" rx="9" ry="22" fill="${C}" ${st}/><ellipse cx="45" cy="13" rx="4" ry="14" fill="${C2}"/><ellipse cx="75" cy="13" rx="4" ry="14" fill="${C2}"/>`);
-  if(s==="owl")o.push(`<path d="M28 34 L30 10 L48 22 Z" fill="${C}" ${st}/><path d="M92 34 L90 10 L72 22 Z" fill="${C}" ${st}/>`);
-  if(s==="frog")o.push(`<circle cx="42" cy="26" r="14" fill="${C}" ${st}/><circle cx="78" cy="26" r="14" fill="${C}" ${st}/>`);
-  if(s==="dino")o.push(`<path d="M38 26 L46 6 L56 20 Z" fill="${C2}" ${st}/><path d="M52 20 L60 0 L68 20 Z" fill="${C2}" ${st}/><path d="M64 20 L74 6 L82 26 Z" fill="${C2}" ${st}/>`);
-  if(s==="robot")o.push(`<line x1="60" y1="20" x2="60" y2="7" stroke="${INK}" stroke-width="3"/><circle cx="60" cy="7" r="5" fill="${C2}" ${st}/><rect x="13" y="44" width="11" height="18" rx="4" fill="${C2}" ${st}/><rect x="96" y="44" width="11" height="18" rx="4" fill="${C2}" ${st}/>`);
-  if(s==="kid")o.push(`<circle cx="25" cy="58" r="6" fill="${skin}" ${st}/><circle cx="95" cy="58" r="6" fill="${skin}" ${st}/>`);
-  if(s==="kid"&&ch.pony&&ch.acc!=="helmet")o.push(`<ellipse cx="96" cy="34" rx="9" ry="14" fill="${ch.hair}" ${st} transform="rotate(30 96 34)"/>`);
-  // head
-  if(s==="robot")o.push(`<rect x="22" y="18" width="76" height="66" rx="20" fill="${C}" ${st}/><rect x="30" y="32" width="60" height="42" rx="14" fill="#E9F6FF" ${st}/>`);
-  else o.push(`<circle cx="60" cy="54" r="36" fill="${skin}" ${st}/>`);
-  // face patches
-  if(s==="fox")o.push(`<ellipse cx="60" cy="72" rx="21" ry="13" fill="${C2}"/>`);
-  if(s==="monkey")o.push(`<ellipse cx="60" cy="63" rx="25" ry="21" fill="${C2}"/>`);
-  if(s==="penguin")o.push(`<ellipse cx="60" cy="60" rx="27" ry="25" fill="${C2}"/>`);
-  if(s==="owl")o.push(`<circle cx="46" cy="55" r="12" fill="${C2}"/><circle cx="74" cy="55" r="12" fill="${C2}"/>`);
-  if(s==="bear")o.push(`<ellipse cx="60" cy="69" rx="13" ry="9" fill="${C2}"/>`);
-  if(s==="dog")o.push(`<ellipse cx="60" cy="69" rx="14" ry="10" fill="${C===("#FFFFFF")?"#F1F1F1":"#FFF4E6"}"/>`);
-  if(s==="panda")o.push(`<ellipse cx="46" cy="56" rx="9" ry="12" fill="${C2}" transform="rotate(25 46 56)"/><ellipse cx="74" cy="56" rx="9" ry="12" fill="${C2}" transform="rotate(-25 74 56)"/>`);
-  if(ch.spot)o.push(`<ellipse cx="75" cy="44" rx="11" ry="9" fill="${C2}" opacity=".9"/>`);
-  // hair (after head)
-  if(s==="kid"&&ch.acc!=="helmet")o.push(`<path d="M24 52 Q20 14 60 14 Q100 14 96 52 Q92 36 78 30 Q70 40 56 34 Q40 32 24 52 Z" fill="${ch.hair}" ${st}/>`);
-  // floppy dog ears go over the head
-  if(s==="dog")o.push(`<ellipse cx="27" cy="50" rx="10" ry="19" fill="${C2}" ${st} transform="rotate(18 27 50)"/><ellipse cx="93" cy="50" rx="10" ry="19" fill="${C2}" ${st} transform="rotate(-18 93 50)"/>`);
-  // accessories
-  const acc=ch.acc;
-  if(acc==="helmet")o.push(`<path d="M24 48 Q24 15 60 15 Q96 15 96 48 Q60 36 24 48 Z" fill="${ch.hc||C2}" ${st}/><path d="M60 16 L60 37" stroke="#fff" stroke-width="5" stroke-linecap="round"/>`);
-  if(acc==="headband")o.push(`<rect x="24" y="30" width="72" height="10" rx="5" fill="${ch.hb||C2}" ${st}/><path d="${starPath(60,35,6,2.6)}" fill="#fff"/>`);
-  if(acc==="goggles")o.push(`<path d="M24 34 L96 34" stroke="${INK}" stroke-width="5"/><circle cx="47" cy="33" r="9" fill="${ch.g||"#BFE9FF"}" ${st}/><circle cx="73" cy="33" r="9" fill="${ch.g||"#BFE9FF"}" ${st}/><circle cx="44" cy="30" r="2.5" fill="#fff"/><circle cx="70" cy="30" r="2.5" fill="#fff"/>`);
-  if(acc==="mask")o.push(`<path d="M28 52 Q60 42 92 52 Q94 64 80 66 Q68 66 60 60 Q52 66 40 66 Q26 64 28 52 Z" fill="${ch.mc||C2}" ${st}/>`);
-  // eyes
-  const eyes=(x1,x2,y,r)=>`<ellipse cx="${x1}" cy="${y}" rx="${r}" ry="${r*1.25}" fill="${INK}"/><ellipse cx="${x2}" cy="${y}" rx="${r}" ry="${r*1.25}" fill="${INK}"/><circle cx="${x1+2}" cy="${y-3}" r="2.4" fill="#fff"/><circle cx="${x2+2}" cy="${y-3}" r="2.4" fill="#fff"/><circle cx="${x1-2}" cy="${y+3}" r="1.2" fill="#fff"/><circle cx="${x2-2}" cy="${y+3}" r="1.2" fill="#fff"/>`;
-  if(s==="frog")o.push(`<circle cx="42" cy="25" r="9" fill="#fff" ${st}/><circle cx="78" cy="25" r="9" fill="#fff" ${st}/>`+eyes(42,78,26,4.4));
-  else if(s==="panda")o.push(`<circle cx="46" cy="56" r="6.5" fill="#fff"/><circle cx="74" cy="56" r="6.5" fill="#fff"/>`+eyes(46,74,56,4));
-  else if(s==="robot")o.push(eyes(46,74,52,5.5));
-  else o.push(eyes(46,74,56,6));
-  // nose / beak
-  if(["cat","dog","bear","fox","bunny","panda","monkey"].includes(s))o.push(`<ellipse cx="60" cy="65" rx="4.5" ry="3.2" fill="${INK}"/>`);
-  if(s==="owl"||s==="penguin")o.push(`<path d="M55 63 L65 63 L60 70 Z" fill="#FFB020" ${st.replace('3"','2"')}/>`);
-  if(s==="dino")o.push(`<circle cx="54" cy="64" r="1.8" fill="${INK}"/><circle cx="66" cy="64" r="1.8" fill="${INK}"/>`);
-  // blush
-  if(s!=="robot")o.push(`<ellipse cx="35" cy="68" rx="6" ry="3.5" fill="#FF7A9A" opacity=".55"/><ellipse cx="85" cy="68" rx="6" ry="3.5" fill="#FF7A9A" opacity=".55"/>`);
-  // mouth
-  const my=s==="robot"?64:(["owl","penguin"].includes(s)?74:71);
-  o.push(ch.m==="open"?`<path d="M52 ${my-1} Q60 ${my+11} 68 ${my-1} Z" fill="#B23A48" ${st.replace('3"','2.5"')}/>`:`<path d="M53 ${my} Q60 ${my+7} 67 ${my}" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`);
-  if(tier==="star")o.push(`<path d="M42 18 L46 3 L54 12 L60 0 L66 12 L74 3 L78 18 Z" fill="#FFC93C" ${st}/><circle cx="60" cy="10" r="2.5" fill="#FF5C7A"/>`);
-  return`<svg class="chibi" viewBox="0 -2 120 124" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${o.join("")}</svg>`;
+/* opts: placed:Set, drop:Set (animate in), hi:Set (highlight; others faded), gold:bool, ghost:bool (outline missing parts) */
+function builderSVG(m,opts={}){
+  const B=BUILDERS[m];const placed=opts.placed||new Set();const ghost=opts.ghost!==false;
+  const st=`stroke="${INK}" stroke-width="3" stroke-linejoin="round"`;
+  const gst=`fill="none" stroke="#A7B1D3" stroke-width="2.5" stroke-dasharray="5 4"`;
+  const studs=(x,y,w,fill)=>{let s="";for(let k=x+6;k+8<=x+w-4;k+=14)s+=`<rect x="${k}" y="${y-5}" width="8" height="6" rx="1.5" fill="${fill}" ${st.replace('3"','2"')}/>`;return s;};
+  const R=(x,y,w,h,rx,fill,on,stud)=>on?`${stud?studs(x,y,w,fill):""}<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}" ${st}/>`:`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" ${gst}/>`;
+  const emb={star:`<path d="${starPath(60,91,10,4.5)}" fill="${B.c3}" ${st.replace('3"','2"')}/>`,
+    bolt:`<path d="M63 79 L52 93 L60 93 L56 104 L68 88 L60 88 Z" fill="${B.c3}" ${st.replace('3"','2"')}/>`,
+    heart:`<path d="M60 102 Q46 92 48 84 Q51 77 60 84 Q69 77 72 84 Q74 92 60 102 Z" fill="${B.c2}" ${st.replace('3"','2"')}/>`,
+    wrench:`<g transform="rotate(-40 60 91)"><rect x="56" y="84" width="8" height="20" rx="3" fill="${B.c3}" ${st.replace('3"','2"')}/><circle cx="60" cy="82" r="7" fill="${B.c3}" ${st.replace('3"','2"')}/><rect x="57" y="74" width="6" height="7" fill="${B.c}"/></g>`,
+    question:`<text x="60" y="101" text-anchor="middle" font-family="Baloo 2,system-ui,sans-serif" font-weight="800" font-size="26" fill="${B.c3}" stroke="${INK}" stroke-width="1.5">?</text>`}[B.emb];
+  const part={
+    capeBack:on=>B.top==="cape"&&on?`<path d="M32 74 L16 130 L104 130 L88 74 Z" fill="${B.c3}" ${st}/>`:"",
+    base:on=>R(16,146,88,10,3,"#7A869A",on,true),
+    legs:on=>R(33,118,25,28,4,B.c2,on,false)+R(62,118,25,28,4,B.c2,on,false)+(on?`<rect x="33" y="139" width="25" height="7" fill="${INK}" opacity=".25"/><rect x="62" y="139" width="25" height="7" fill="${INK}" opacity=".25"/>`:""),
+    hips:on=>R(31,108,58,12,4,B.c3,on,false),
+    arms:on=>R(11,74,19,32,7,B.c,on,false)+R(90,74,19,32,7,B.c,on,false)+R(12,103,17,11,4,B.skin,on,false)+R(91,103,17,11,4,B.skin,on,false),
+    body:on=>R(29,72,62,38,7,B.c,on,false)+(on?emb:""),
+    head:on=>R(35,32,50,40,11,B.skin,on,false),
+    topUnder:on=>{if(!on)return"";if(B.top==="cape")return`<rect x="37" y="43" width="46" height="13" rx="6" fill="${B.c2}" ${st}/>`;if(B.top==="antenna")return`<rect x="28" y="45" width="8" height="15" rx="3" fill="${B.c3}" ${st}/><rect x="84" y="45" width="8" height="15" rx="3" fill="${B.c3}" ${st}/>`;return"";},
+    face:on=>on?`<rect x="45" y="44" width="8" height="10" rx="3" fill="${INK}"/><rect x="67" y="44" width="8" height="10" rx="3" fill="${INK}"/><circle cx="50" cy="47" r="1.8" fill="#fff"/><circle cx="72" cy="47" r="1.8" fill="#fff"/><path d="M50 61 Q60 69 70 61" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/><ellipse cx="42" cy="60" rx="5" ry="3" fill="#FF7A9A" opacity=".5"/><ellipse cx="78" cy="60" rx="5" ry="3" fill="#FF7A9A" opacity=".5"/>`:`<rect x="45" y="44" width="30" height="26" rx="6" ${gst}/>`,
+    top:on=>{if(!on)return`<rect x="38" y="10" width="44" height="20" rx="8" ${gst}/>`;
+      if(B.top==="cape")return`<path d="${starPath(60,24,8,3.6)}" fill="${B.c3}" ${st.replace('3"','2"')}/>`;
+      if(B.top==="antenna")return`<line x1="60" y1="32" x2="60" y2="16" stroke="${INK}" stroke-width="3"/><circle cx="60" cy="13" r="6" fill="${B.c3}" ${st}/>`;
+      if(B.top==="plume")return`<path d="M60 26 Q46 8 64 2 Q60 14 72 24 Z" fill="${B.c2}" ${st}/><rect x="33" y="22" width="54" height="14" rx="6" fill="${B.c3}" ${st}/>`;
+      if(B.top==="hardhat")return`<path d="M34 34 Q34 12 60 12 Q86 12 86 34 Z" fill="${B.c3}" ${st}/><rect x="28" y="31" width="64" height="7" rx="3" fill="${B.c3}" ${st}/><path d="M60 13 L60 31" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`;
+      if(B.top==="space")return`<circle cx="60" cy="51" r="29" fill="#BFE9FF" fill-opacity=".35" ${st}/><path d="M44 36 Q51 28 60 27" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><line x1="60" y1="22" x2="60" y2="10" stroke="${INK}" stroke-width="3"/><circle cx="60" cy="9" r="4" fill="${B.c3}" ${st}/>`;
+      return"";}
+  };
+  const wrap=(p,html)=>{if(!html)return"";let a="";if(opts.hi&&!opts.hi.has(p))a+=` opacity=".3"`;const cls=opts.drop&&opts.drop.has(p)?` class="drop"`:"";return`<g${a}${cls}>${html}</g>`;};
+  const has=p=>placed.has(p);
+  const o=[];
+  if(opts.gold)o.push(`<path d="${starPath(60,84,78,54,12)}" fill="#FFE48A" opacity=".9"/>`);
+  o.push(wrap("top",part.capeBack(has("top"))));
+  for(const p of ["base","legs","hips","arms","body","head"]){if(has(p)||ghost)o.push(wrap(p,part[p](has(p))));}
+  o.push(wrap("top",part.topUnder(has("top"))));
+  if(has("face")||ghost)o.push(wrap("face",part.face(has("face"))));
+  if(has("top")||ghost)o.push(wrap("top",part.top(has("top"))));
+  if(placed.size===PARTS.length)o.push(`<path d="${starPath(14,30,7,2.5,4)}" fill="#FFC93C"/><path d="${starPath(106,22,6,2.2,4)}" fill="#FFC93C"/><path d="${starPath(104,70,5,2,4)}" fill="#FFC93C"/>`);
+  return`<svg class="brickfig" viewBox="0 -6 120 166" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${o.join("")}</svg>`;
 }
 
 /* ===================== data store ===================== */
@@ -435,7 +418,6 @@ function today(o=0){const d=new Date();d.setDate(d.getDate()+o);return d.getFull
 let REW=[];
 function exposed(id){const m=M[id];if(!m){M[id]={intro:today(),exp:1,iv:0,due:today(1),streak:0,att:[],best:1};REW.push({id,t:"new"});}else{m.exp=(m.exp||0)+1;}save();}
 const TIER_RANK={good:2,strong:3};
-function tierOf(id){const m=M[id];if(!m)return"sil";const b=Math.max(m.best||1,TIER_RANK[kind(id)]||1);return b>=3?"star":b===2?"cape":"base";}
 function recallReady(id){const m=M[id];return !!(m&&m.intro<today()&&!m.reteach);}
 function recordRecall(id,level,ctx,counts){
   const m=M[id]||(M[id]={intro:today(),exp:0,iv:0,due:today(),streak:0,att:[]});
@@ -446,7 +428,7 @@ function recordRecall(id,level,ctx,counts){
     if(H[id]){H[id].greens=(H[id].greens||0)+1;H[id].due=today(3);if(H[id].greens>=2)delete H[id];}}
   else{m.streak=0;m.iv=1;m.due=today(1);if(level>=4)m.reteach=true;
     H[id]={since:(H[id]&&H[id].since)||today(),due:today(1),level:Math.max(level,(H[id]&&H[id].level)||0),greens:0};}
-  const now=TIER_RANK[kind(id)]||1;if(now>before){m.best=now;REW.push({id,t:now===3?"star":"cape"});}
+  const now=TIER_RANK[kind(id)]||1;if(now>before){m.best=now;if(before<2)REW.push({id,t:"place"});}
   save();
 }
 function kind(id){const m=M[id];if(!m)return"new";if(H[id])return"help";if(!m.att||!m.att.length)return"heard";return m.streak>=2?"strong":m.streak>=1?"good":"help";}
@@ -573,7 +555,7 @@ function goKid(){newFlow();stopVideo();hush();micOff(true);S.mode="kid";S.view="
 function goBack(){const b=S.back||"home";newFlow();stopVideo();hush();micOff(true);
   if(b.startsWith("parent:")){S.mode="parent";S.view=b.slice(7);}else{S.mode="kid";S.view=b;}render();window.scrollTo({top:0});}
 function kidGo(view,line){newFlow();stopVideo();hush();micOff(true);S.mode="kid";S.view=view;render();window.scrollTo({top:0});if(line)speak(line);}
-const BACKICON={map:"🗺️",book:"📖",home:"🏠"};
+const BACKICON={map:"🗺️",book:"🧱",home:"🏠"};
 function openStage(back){S.back=back||"home";$("#homeBtn").textContent=BACKICON[S.back]||"↩";S.mode="kid";S.view="stage";render();loadYT();if(innerWidth<860)setTimeout(()=>$("#stage").scrollIntoView({behavior:"smooth"}),50);}
 
 /* ===================== card building blocks ===================== */
@@ -588,8 +570,11 @@ const TIPS={
   start:"Tap ▶ to watch. The video stops at important lines.",
   watch:"Watch and listen… the video will stop by itself.",
   sceneEnd:"▶ Watch the next part · back button = go back",
-  unseen:"You don't have this sticker yet. Tap ▶ to watch the part of the show where it is.",
-  sticker:"👂 Hear it · picture = when to say it · 🎬 watch the scene · 🎤 practice · 📖 back",
+  unseen:"You don't have this brick yet. Tap ▶ to watch the part of the show where it is.",
+  newBrick:"New phrase = new brick. Say it by yourself later to put it on your hero.",
+  place:"Each phrase you say by yourself adds a piece to the hero.",
+  heroDone:"You finished a hero! Keep going to build the next one.",
+  sticker:"The bright part shows where this brick goes. 👂 hear it · picture = when to say it · 🎬 scene · 🎤 practice",
   challengeEnd:"Tap 🏠 to go home."
 };
 /* how-to-play box on kid pages */
@@ -599,9 +584,9 @@ function guideHTML(key,title,items){if(P.tips===false)return"";const closed=P.gc
 function bindGuide(v,key,items){
   const t=v.querySelector(`[data-gtog="${key}"]`);if(t)t.onclick=()=>{P.gclosed=P.gclosed||{};P.gclosed[key]=!P.gclosed[key];save();render();};
   const r=v.querySelector(`[data-gread="${key}"]`);if(r)r.onclick=async()=>{const f=FLOW;for(const[,txt]of items){if(f!==FLOW)return;await speak(txt.replace(/[^\x00-\x7F]+/g," "));}};}
-const G_HOME=[["🗺️","Adventure: watch the show and learn new phrases."],["🎮","Hero Challenge: say the phrases you learned. It opens the day after your first Adventure."],["📖","Sticker Book: all your phrases, and where to find them."],["🔒","Grown-ups: press and hold the lock for 2 seconds."]];
+const G_HOME=[["🗺️","Adventure: watch the show and learn new phrases."],["🎮","Hero Challenge: say the phrases you learned. It opens the day after your first Adventure."],["🧱","Brick Heroes: build 5 secret heroes. Each phrase you say by yourself adds a piece!"],["🔒","Grown-ups: press and hold the lock for 2 seconds."]];
 const G_MAP=[["👆","Tap a circle to watch that part of the show."],["🟢","The bouncing green circle is the next new part."],["⭐","Yellow circles with a star are done. You can watch them again."],["🙂","Small pictures under a circle are the phrases in that part. Gray means not learned yet."],["👂","New phrase: the video stops after it. Listen two times and copy the move."],["🎤","Phrase you know: the video stops before it. You say it first, then hear the hero say it!"],["💡","Stuck? Tap the light bulb for a clue. Said it? Tap the star."]];
-const G_BOOK=[["📖","Each sticker is a hero friend with a phrase. Hear a new phrase in an Adventure to get a new friend!"],["🦸","Say the phrase by yourself (no 💡) to power up: first a cape, then a crown!"],["🙋","Tap the buttons on top to turn the page: I need, With friends, Feelings, Fix problems, Ask and care."],["❔","Gray sticker: not found yet. Tap it to see where to find it."],["👆","Color sticker: tap it to hear it, see when to use it, watch the scene, or practice."],["💡","A light bulb on a sticker means: let's practice this one more."]];
+const G_BOOK=[["🧱","Each phrase is a brick. Hear a new phrase in an Adventure to find its brick."],["🎤","A white brick is ready. Say the phrase by yourself (no 💡) and it goes on your hero!"],["🦸","Tap the heroes on top to switch. Each hero is one kind of talking: I need, With friends, Feelings, Fix problems, Ask and care."],["❔","Gray brick: not found yet. Tap it to see where to find it."],["🏆","Put on all the pieces to finish the hero and find out its name!"],["⭐","A gold glow means you know every phrase of that hero really well."]];
 function ansLine(c){return P.answer?`<div class="answer">👨‍👩‍👧 <b>${esc(sayOf(c))}</b>${(c.alt||[]).length?` · also OK: ${esc(c.alt.join(" / "))}`:""}${P.zh?` · <span class="zh">${esc(c.zh)}</span>`:""}</div>`:"";}
 /* one tap to continue */
 function goCard(icon,line,flow){return new Promise(res=>{tipped(TIPS.go,`<div class="cbody"><div class="pic" id="gPic">${esc(icon)}</div></div><div class="cfoot"><span></span><span></span><button class="round go r" id="gGo" aria-label="Go on">▶</button></div>`);
@@ -652,35 +637,48 @@ async function praise(level,c,src,flow,payoff){
   else await speak(level===0?"Wow! You did it!":"Great job!");
 }
 
-/* ===================== rewards: new friend / power-up ===================== */
+/* ===================== rewards: new brick / piece placed / hero complete ===================== */
 async function showRewards(flow){
-  const seen=new Set();const list=REW.filter(r=>{const k=r.id+r.t;if(seen.has(k)||!CH[r.id])return false;seen.add(k);return true;});REW=[];
-  for(const r of list){if(flow!==FLOW)return;const ch=chibiFor(r.id);const tier=r.t==="new"?"base":r.t;
-    const line=r.t==="new"?`New sticker! Say hi to ${ch.n}!`:r.t==="cape"?`Power up! ${ch.n} got a super cape!`:`Super star! ${ch.n} got a crown!`;
-    celebrate(r.t==="new"?"🎉":r.t==="cape"?"🦸":"👑");
-    card(`<div class="cbody"><div class="reward">${r.t==="new"?"New sticker!":"Power up!"}</div><div class="bigchibi win">${chibiSVG(ch,tier)}</div><div class="reward">${esc(ch.n)}</div><div class="pic" style="font-size:40px">${esc(CH[r.id].emoji)}</div></div>
-      <div class="cfoot"><span></span><span></span><button class="round go r" id="rwGo" aria-label="Go on">▶</button></div>`,r.t==="new"?"Every new phrase gives you a sticker friend. Say it by yourself later to power it up!":"Saying phrases by yourself powers up your sticker friends: cape first, then a crown.");
-    await speak(line);if(flow!==FLOW)return;
-    await new Promise(res=>{const b=$("#rwGo");if(b)b.onclick=()=>{sfx("tap");res();};else res();});}
+  const list=REW.filter(r=>CH[r.id]);REW=[];
+  const fresh=[...new Set(list.filter(r=>r.t==="new").map(r=>r.id))];
+  const placedIds=[...new Set(list.filter(r=>r.t==="place").map(r=>r.id))];
+  const tap=()=>new Promise(res=>{const b=$("#rwGo");if(b)b.onclick=()=>{sfx("tap");res();};else res();});
+  const foot=`<div class="cfoot"><span></span><span></span><button class="round go r" id="rwGo" aria-label="Go on">▶</button></div>`;
+  if(fresh.length){if(flow!==FLOW)return;celebrate("🧱");
+    tipped(TIPS.newBrick,`<div class="cbody"><div class="reward">${fresh.length>1?"New bricks!":"New brick!"}</div>
+      <div class="brkrow">${fresh.map(id=>`<span class="brk st-heard" style="--hc:${BUILDERS[CH[id].m].c}"><span class="be">${esc(CH[id].emoji)}</span></span>`).join("")}</div></div>${foot}`);
+    await speak(fresh.length>1?"You found new bricks! Say them by yourself next time, and they go on your hero!":"You found a new brick! Say it by yourself next time, and it goes on your hero!");
+    if(flow!==FLOW)return;await tap();}
+  const byMod={};for(const id of placedIds)(byMod[CH[id].m]=byMod[CH[id].m]||[]).push(id);
+  for(const [m,ids] of Object.entries(byMod)){if(flow!==FLOW)return;
+    const before=placedParts(m,new Set(ids)),after=placedParts(m);const drop=new Set([...after].filter(p=>!before.has(p)));
+    const done=after.size===PARTS.length;const B=BUILDERS[m];
+    celebrate(done?"🏆":"🧱");
+    tipped(done?TIPS.heroDone:TIPS.place,`<div class="cbody"><div class="reward">${done?"Hero complete!":"Click! It fits!"}</div>
+      <div class="bigfig win">${builderSVG(m,{placed:after,drop,gold:heroGold(m)})}</div>
+      <div class="reward">${done?esc(B.n):`${after.size} / ${PARTS.length}`}</div></div>${foot}`);
+    const names=[...drop].map(p=>PART_NAME[p]);
+    await speak(done?`You built your hero! Say hi to ${B.n}!`:names.length?`Click! The ${names.join(" and the ")} ${names.length>1?"are":"is"} on!`:"Great job! Keep building!");
+    if(flow!==FLOW)return;await tap();}
 }
 
 /* ===================== KID HOME ===================== */
 function vHome(v){
   const ready=Object.keys(M).filter(id=>CH[id]&&(recallReady(id)||M[id].reteach));
-  const helpN=dueHelp().length;const all=Object.keys(CH);const got=all.filter(id=>M[id]).length;
-  const newest=all.filter(id=>M[id]).sort((a,b)=>((M[b].intro||"")+(M[b].best||0)).localeCompare((M[a].intro||"")+(M[a].best||0)))[0];
+  const helpN=dueHelp().length;const all=Object.keys(CH);const got=all.filter(passed).length;
+  const best=MODULES.map(m=>({m:m.id,n:placedParts(m.id).size,done:heroDone(m.id)})).sort((a,b)=>(a.done-b.done)||(b.n-a.n))[0];
   v.innerHTML=`
   <section class="sticker hello"><button class="pic ava" id="hiAva" aria-label="Say hi">🕷️</button><h2>Hi! Ready to help Spidey?</h2></section>
   ${guideHTML("home","How to play",G_HOME)}
   <div class="doors">
     <button class="door adv sticker" id="dAdv"><span class="em">🗺️</span><h2>Adventure</h2><span class="go">▶</span></button>
     <button class="door game sticker" id="dGame" ${ready.length?"":'data-off="1"'}>${helpN?`<span class="pill">💡 ${helpN}</span>`:""}<span class="em">🎮</span><h2>Hero Challenge</h2><span class="go">⭐</span></button>
-    <button class="door book sticker" id="dBook"><span class="pill sun">⭐ ${got}/${all.length}</span>${newest?`<span class="friend">${chibiSVG(chibiFor(newest),tierOf(newest))}</span>`:`<span class="em">📖</span>`}<h2>Sticker Book</h2><span class="go">👀</span></button>
+    <button class="door book sticker" id="dBook"><span class="pill sun">🧱 ${got}/${all.length}</span><span class="friend">${builderSVG(best.m,{placed:placedParts(best.m),gold:heroGold(best.m)})}</span><h2>Brick Heroes</h2><span class="go">🔨</span></button>
   </div>`;
   $("#hiAva").onclick=()=>speak("Hi! Ready to help Spidey?",{ava:$("#hiAva")});bindGuide(v,"home",G_HOME);
   $("#dAdv").onclick=()=>{sfx("tap");kidGo("map","Pick an adventure!");};
   $("#dGame").onclick=()=>{sfx("tap");if(!ready.length){speak("Watch an adventure first. Then come back tomorrow for a challenge!");return;}startChallenge();};
-  $("#dBook").onclick=()=>{sfx("tap");kidGo("book","Here are your stickers!");};
+  $("#dBook").onclick=()=>{sfx("tap");kidGo("book","Let's build your heroes!");};
 }
 function nextScene(){for(const ep of EPS)for(const sc of ep.scenes)if(!DONE[ep.id+"/"+sc.id])return{ep,sc};return null;}
 function nextIn(ep){return ep.scenes.find(sc=>!DONE[ep.id+"/"+sc.id])||null;}
@@ -720,34 +718,45 @@ async function playFromMap(ep,sc,back){
   await runScene(ep,sc,flow);
 }
 
-/* ===================== STICKER BOOK: every phrase, by situation ===================== */
+/* ===================== BRICK HEROES book ===================== */
 const PAGE_SAY={needs:"I want. I need.",play:"With friends.",feel:"How I feel.",fix:"Uh-oh! Let's fix it.",ask:"Ask and care."};
+function brickState(id){if(!M[id])return"unseen";if(kind(id)==="strong")return"strong";return passed(id)?"placed":"heard";}
+function brickBtn(id){const c=CH[id],B=BUILDERS[c.m],st=brickState(id);
+  return`<button class="brk st-${st}" style="--hc:${B.c}" data-c="${esc(id)}" aria-label="${esc(st==="unseen"?"?":sayOf(c))}">
+    <span class="be">${st==="unseen"?"?":esc(c.emoji)}</span>
+    ${st==="placed"?'<span class="bb">✓</span>':st==="strong"?'<span class="bb">⭐</span>':st==="heard"?'<span class="bb">🎤</span>':""}
+    ${H[id]&&st!=="unseen"?'<span class="bh">💡</span>':""}</button>${P.answer?`<span class="t">${esc(sayOf(c))}</span>`:""}`;}
 function vBook(v){
   if(!S.page||!MODULES.find(m=>m.id===S.page))S.page=MODULES[0].id;
-  const all=Object.values(CH);const got=all.filter(c=>M[c.id]).length;const cs=all.filter(c=>c.m===S.page);
-  v.innerHTML=`<div class="kidbar"><button class="round nav" id="kHome" aria-label="Home">🏠</button><span class="tally">⭐ ${got} / ${all.length}</span></div>
-  ${guideHTML("book","How to play: Sticker Book",G_BOOK)}
-  <div class="pages">${MODULES.map(m=>`<button class="page" data-pg="${m.id}" aria-current="${m.id===S.page}" aria-label="${esc(m.title)}">${m.emoji}</button>`).join("")}</div>
-  <section class="sticker stks">${cs.map(c=>{const seen=!!M[c.id],tier=tierOf(c.id),ch=chibiFor(c.id);return`<button class="stk${seen?"":" unseen"}" data-c="${esc(c.id)}" aria-label="${esc(seen?ch.n:"?")}">
-    <span class="disc ${seen?"k-"+(tier==="star"?"strong":tier==="cape"?"good":"heard"):""}">${chibiSVG(ch,seen?tier:"base")}${seen?"":'<span class="q">?</span>'}${seen?`<span class="pe">${esc(c.emoji)}</span>`:""}${seen&&H[c.id]?'<span class="b">💡</span>':""}</span>
-    ${seen?`<span class="nm">${esc(ch.n)}</span>`:""}${P.answer?`<span class="t">${esc(sayOf(c))}</span>`:""}</button>`;}).join("")}</section>`;
-  $("#kHome").onclick=()=>goKid();
-  bindGuide(v,"book",G_BOOK);
+  const all=Object.keys(CH),got=all.filter(passed).length;
+  const m=S.page,B=BUILDERS[m],L=modPhrases(m),pl=placedParts(m),done=pl.size===PARTS.length;
+  v.innerHTML=`<div class="kidbar"><button class="round nav" id="kHome" aria-label="Home">🏠</button><span class="tally">🧱 ${got} / ${all.length}</span></div>
+  ${guideHTML("book","How to play: Brick Heroes",G_BOOK)}
+  <div class="htabs">${MODULES.map(mm=>`<button class="htab" data-pg="${mm.id}" aria-current="${mm.id===m}" aria-label="${esc(mm.title)}"><span class="mini">${builderSVG(mm.id,{placed:placedParts(mm.id),gold:heroGold(mm.id)})}</span><span class="me">${mm.emoji}</span>${heroDone(mm.id)?'<span class="ok">✓</span>':""}</button>`).join("")}</div>
+  <section class="sticker build">
+    <div class="fig"><div class="bigfig">${builderSVG(m,{placed:pl,gold:heroGold(m)})}</div>
+      <div class="reward">${done?esc(B.n):"? ? ?"}</div><div class="pieces">${PARTS.map(p=>`<i class="${pl.has(p)?"on":""}"></i>`).join("")}</div></div>
+    <div class="bricks">${L.map(id=>`<div class="bcell">${brickBtn(id)}</div>`).join("")}</div>
+  </section>`;
+  $("#kHome").onclick=()=>goKid();bindGuide(v,"book",G_BOOK);
   v.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>{sfx("tap");S.page=b.dataset.pg;render();speak(PAGE_SAY[S.page]||"");});
   v.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{sfx("tap");openSticker(b.dataset.c);});
 }
 function sceneOf(src){if(!src||!src.ep)return null;const ep=EPS.find(e=>e.id===src.ep);const sc=ep&&ep.scenes.find(s=>s.id===src.sc);return sc?{ep,sc}:null;}
 function openSticker(id){
-  const c=CH[id];const flow=newFlow();STAR=0;openStage("book");
+  const c=CH[id],m=c.m;const flow=newFlow();STAR=0;openStage("book");
   const srcs=SRC[id]||[];const src=srcs.find(x=>x.ep)||srcs[0]||null;const where=sceneOf(src);
+  const mine=new Set(partsFor(m,id));const names=[...mine].map(p=>PART_NAME[p]).join(" and the ");
+  const fig=()=>`<div class="bigfig" id="sPic">${builderSVG(m,{placed:placedParts(m),hi:mine,ghost:true})}</div>`;
   if(!M[id]){
-    tipped(TIPS.unseen,`<div class="cbody"><div class="bigchibi sil" id="sPic">${chibiSVG(chibiFor(id),"base")}</div>${where?`<div class="pic" style="font-size:64px">👉 ${esc(where.sc.emoji)}</div>`:""}</div>
-      <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">📖</button><span></span>${where?`<button class="round go r" id="sGo" aria-label="Watch">▶</button>`:"<span></span>"}</div>`);
-    speak(where?"Who is this? Find me in this adventure!":"Who is this? Find me in an adventure!",{ava:$("#sPic")});
+    tipped(TIPS.unseen,`<div class="cbody">${fig()}${where?`<div class="pic" style="font-size:60px">👉 ${esc(where.sc.emoji)}</div>`:""}</div>
+      <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">🧱</button><span></span>${where?`<button class="round go r" id="sGo" aria-label="Watch">▶</button>`:"<span></span>"}</div>`);
+    speak(where?`This brick is the ${names}. Find it in this adventure!`:`This brick is the ${names}. Find it in an adventure!`);
     $("#sBack").onclick=()=>goBack();const g=$("#sGo");if(g)g.onclick=()=>{sfx("tap");runScene(where.ep,where.sc,flow);};
     return;}
-  const hear=()=>{const h=$("#sHint");if(h)h.innerHTML=`<span>${esc(c.move[0])}</span>`;return src?playLine(src,flow):speak(sayOf(c),{ava:$("#sPic")});};
-  const draw=()=>{tipped(TIPS.sticker,`<div class="cbody"><button class="bigchibi" id="sPic" aria-label="Hear it">${chibiSVG(chibiFor(id),tierOf(id))}</button><div class="reward">${esc(chibiFor(id).n)} <span style="font-size:32px">${esc(c.emoji)}</span></div>
+  const hear=()=>{const h=$("#sHint");if(h)h.innerHTML=`<span>${esc(c.move[0])}</span>`;return src?playLine(src,flow):speak(sayOf(c));};
+  const draw=()=>{tipped(TIPS.sticker,`<div class="cbody">${fig()}
+      <div class="row" style="justify-content:center;gap:10px"><span class="brk st-${brickState(id)}" style="--hc:${BUILDERS[m].c}"><span class="be">${esc(c.emoji)}</span></span></div>
       <div class="hint" id="sHint"></div>
       <div class="acts">
         <button class="round ear" id="sEar" aria-label="Hear it">👂</button>
@@ -755,14 +764,15 @@ function openSticker(id){
         ${where?`<button class="round" id="sScene" aria-label="Watch the scene">🎬</button>`:""}
         <button class="round mic2" id="sTry" aria-label="Try it">🎤</button>
       </div></div>
-    <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">📖</button><span></span><span></span></div>${ansLine(c)}`);
-    $("#sPic").onclick=hear;$("#sEar").onclick=hear;
+    <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">🧱</button><span></span><span></span></div>${ansLine(c)}`);
+    $("#sEar").onclick=hear;
     $("#sWhen").onclick=async()=>{const h=$("#sHint");if(h)h.innerHTML=`<span>${esc(c.hero?c.hero.e:"🏠")}</span>`;
-      await speak(c.hero?c.hero.say:c.home,{ava:$("#sPic")});if(flow!==FLOW)return;await speak("You can say:");if(flow!==FLOW)return;hear();};
+      await speak(c.hero?c.hero.say:c.home);if(flow!==FLOW)return;await speak("You can say:");if(flow!==FLOW)return;hear();};
     const sc=$("#sScene");if(sc)sc.onclick=()=>{sfx("tap");runScene(where.ep,where.sc,flow);};
     $("#sTry").onclick=async()=>{sfx("tap");await helpTheHero(id,flow,{counts:false,tag:"Practice"});if(flow===FLOW)draw();};
     $("#sBack").onclick=()=>goBack();};
-  draw();hear();
+  draw();
+  speak(passed(id)?`This brick is the ${names}. Great job!`:`Say it by yourself to build the ${names}!`).then(()=>{if(flow===FLOW)hear();});
 }
 
 async function runScene(ep,sc,flow){

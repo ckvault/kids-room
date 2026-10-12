@@ -113,6 +113,13 @@ button{cursor:pointer}
 .stk .t{font-size:12px;font-weight:800;color:var(--muted);text-align:center;line-height:1.15}
 .acts{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
 .round.mic2{background:var(--berry)}
+.guide{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.guide .gh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.guide h3{font-size:20px}
+.guide ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:16px;font-weight:700}
+.guide li{display:flex;gap:10px;align-items:flex-start;line-height:1.35}
+.guide li .i{font-size:22px;width:30px;flex:none;text-align:center;line-height:1.1}
+.tip{margin:0;padding:8px 12px;border-radius:12px;background:var(--soft);font-size:14px;font-weight:700;text-align:center;color:var(--ink);line-height:1.35}
 .door[data-off]{filter:grayscale(.7);opacity:.6}
 .door .pill{position:absolute;top:14px;right:14px;background:var(--berry);color:#fff;border:3px solid var(--line);border-radius:999px;padding:2px 12px;font-family:var(--f-display);font-weight:800;font-size:20px}
 
@@ -294,7 +301,7 @@ const PACK={
 const LS="hero-words-v4";
 let CH={},EPS=[],SRC={};
 let M={},H={},DONE={},CUSTOM={chunks:[],episodes:[]};
-const P={voice:"",speed:1,zh:false,mic:true,answer:true};
+const P={voice:"",speed:1,zh:false,mic:true,answer:true,tips:true,gclosed:{}};
 function load(){try{const d=JSON.parse(localStorage.getItem(LS)||"{}");M=d.mem||{};H=d.help||{};DONE=d.done||{};CUSTOM=d.custom||CUSTOM;Object.assign(P,d.prefs||{});}catch(e){}}
 function save(){try{localStorage.setItem(LS,JSON.stringify({mem:M,help:H,done:DONE,custom:CUSTOM,prefs:P}));}catch(e){toast("Could not save on this device");}}
 function buildIndex(){
@@ -452,14 +459,37 @@ function openStage(back){S.back=back||"home";$("#homeBtn").textContent=BACKICON[
 
 /* ===================== card building blocks ===================== */
 let STAR=0;
-function card(html){const c=$("#card");c.innerHTML=`<div class="chead"><span class="eyebrow" id="cTag"></span><span class="stars" id="cStars">${"⭐".repeat(Math.min(STAR,8))}</span></div>${html}`;return c;}
+function card(html,tip){const c=$("#card");c.innerHTML=`<div class="chead"><span class="eyebrow" id="cTag"></span><span class="stars" id="cStars">${"⭐".repeat(Math.min(STAR,8))}</span></div>${html}${tip&&P.tips!==false?`<p class="tip">${esc(tip)}</p>`:""}`;return c;}
+function tipped(tip,html){return card(html,tip);}
+const TIPS={
+  go:"Tap ▶ to go on.",
+  check:"Tap the picture that matches what happened. Tap 🦸 to hear the question again.",
+  listen:"New phrase! Listen 👂 two times and copy the move. Then tap ▶.",
+  recall:"Your turn! Say it out loud. Stuck? Tap 💡 for a clue: picture → move → first sound → whole line. Said it? Tap ⭐.",
+  start:"Tap ▶ to watch. The video stops at important lines.",
+  watch:"Watch and listen… the video will stop by itself.",
+  sceneEnd:"▶ Watch the next part · back button = go back",
+  unseen:"You don't have this sticker yet. Tap ▶ to watch the part of the show where it is.",
+  sticker:"👂 Hear it · picture = when to say it · 🎬 watch the scene · 🎤 practice · 📖 back",
+  challengeEnd:"Tap 🏠 to go home."
+};
+/* how-to-play box on kid pages */
+function guideHTML(key,title,items){if(P.tips===false)return"";const closed=P.gclosed&&P.gclosed[key];
+  return`<section class="sticker guide" data-guide="${key}"><div class="gh"><h3>❔ ${esc(title)}</h3><div class="row">${closed?"":`<button class="btn sm" data-gread="${key}" aria-label="Read it to me">🔊 Read</button>`}<button class="btn sm" data-gtog="${key}">${closed?"Show":"Hide"}</button></div></div>
+  ${closed?"":`<ul>${items.map(([i,t])=>`<li><span class="i">${esc(i)}</span><span>${esc(t)}</span></li>`).join("")}</ul>`}</section>`;}
+function bindGuide(v,key,items){
+  const t=v.querySelector(`[data-gtog="${key}"]`);if(t)t.onclick=()=>{P.gclosed=P.gclosed||{};P.gclosed[key]=!P.gclosed[key];save();render();};
+  const r=v.querySelector(`[data-gread="${key}"]`);if(r)r.onclick=async()=>{const f=FLOW;for(const[,txt]of items){if(f!==FLOW)return;await speak(txt.replace(/[^\x00-\x7F]+/g," "));}};}
+const G_HOME=[["🗺️","Adventure: watch the show and learn new phrases."],["🎮","Hero Challenge: say the phrases you learned. It opens the day after your first Adventure."],["📖","Sticker Book: all your phrases, and where to find them."],["🔒","Grown-ups: press and hold the lock for 2 seconds."]];
+const G_MAP=[["👆","Tap a circle to watch that part of the show."],["🟢","The bouncing green circle is the next new part."],["⭐","Yellow circles with a star are done. You can watch them again."],["🙂","Small pictures under a circle are the phrases in that part. Gray means not learned yet."],["👂","New phrase: the video stops after it. Listen two times and copy the move."],["🎤","Phrase you know: the video stops before it. You say it first, then hear the hero say it!"],["💡","Stuck? Tap the light bulb for a clue. Said it? Tap the star."]];
+const G_BOOK=[["📖","Each sticker is a phrase from the show. Watch Adventures to collect them!"],["🙋","Tap the buttons on top to turn the page: I need, With friends, Feelings, Fix problems, Ask and care."],["❔","Gray sticker: not found yet. Tap it to see where to find it."],["👆","Color sticker: tap it to hear it, see when to use it, watch the scene, or practice."],["⭐","A star on a sticker means you know it well. A light bulb means let's practice more."]];
 function ansLine(c){return P.answer?`<div class="answer">👨‍👩‍👧 <b>${esc(sayOf(c))}</b>${(c.alt||[]).length?` · also OK: ${esc(c.alt.join(" / "))}`:""}${P.zh?` · <span class="zh">${esc(c.zh)}</span>`:""}</div>`:"";}
 /* one tap to continue */
-function goCard(icon,line,flow){return new Promise(res=>{card(`<div class="cbody"><div class="pic" id="gPic">${esc(icon)}</div></div><div class="cfoot"><span></span><span></span><button class="round go r" id="gGo" aria-label="Go on">▶</button></div>`);
+function goCard(icon,line,flow){return new Promise(res=>{tipped(TIPS.go,`<div class="cbody"><div class="pic" id="gPic">${esc(icon)}</div></div><div class="cfoot"><span></span><span></span><button class="round go r" id="gGo" aria-label="Go on">▶</button></div>`);
   if(line)speak(line,{ava:$("#gPic")});$("#gGo").onclick=()=>{sfx("tap");hush();res();};});}
 /* picture question about what just happened */
 function checkCard(check,flow){return new Promise(res=>{
-  card(`<div class="cbody"><button class="pic" id="qPic" aria-label="Ask again">🦸</button>
+  tipped(TIPS.check,`<div class="cbody"><button class="pic" id="qPic" aria-label="Ask again">🦸</button>
     <div class="choices">${check.o.map((o,i)=>`<button class="choice" data-o="${i}" aria-label="${esc(o[1])}">${esc(o[0])}</button>`).join("")}</div></div>`);
   const ask=()=>speak(check.q,{ava:$("#qPic")});$("#qPic").onclick=ask;ask();
   document.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{if(flow!==FLOW)return;const i=+b.dataset.o;
@@ -468,7 +498,7 @@ function checkCard(check,flow){return new Promise(res=>{
 /* first time: listen only. Plays the original line twice with the move. No demand to speak. */
 function listenCard(c,src,flow){return new Promise(res=>{
   let n=0;
-  const draw=()=>{card(`<div class="cbody"><div class="pic" id="lPic">${esc(c.emoji)}</div>
+  const draw=()=>{tipped(TIPS.listen,`<div class="cbody"><div class="pic" id="lPic">${esc(c.emoji)}</div>
       <div class="hint">${n>=1?`<span>${esc(c.move[0])}</span>`:""}</div>
       <div class="count">${[0,1].map(i=>`<i class="${i<n?"on":""}"></i>`).join("")}</div></div>
     <div class="cfoot"><button class="round ear l" id="lEar" aria-label="Listen again">👂</button><span></span>${n>=2?`<button class="round go r" id="lGo" aria-label="Go on">▶</button>`:"<span></span>"}</div>${ansLine(c)}`);
@@ -482,7 +512,7 @@ function recallCard(c,src,opts,flow){return new Promise(res=>{
     if(level>=1)hints.push(`<span>${esc(c.emoji)}</span>`);
     if(level>=2)hints.push(`<span>${esc(c.move[0])}</span>`);
     if(level>=3)hints.push(`<span>🗣️</span>`);
-    card(`<div class="cbody"><button class="pic" id="rPic" aria-label="Ask again">${esc(opts.pic||"🦸")}</button>
+    tipped(TIPS.recall,`<div class="cbody"><button class="pic" id="rPic" aria-label="Ask again">${esc(opts.pic||"🦸")}</button>
       <div class="hint">${hints.join("")}</div>
       <div class="mic" id="mic" aria-hidden="true">🎤</div></div>
       <div class="cfoot">${level<4?`<button class="round help l" id="rHelp" aria-label="Help">💡</button>`:`<button class="round ear l" id="rEar" aria-label="Listen again">👂</button>`}<span></span><button class="round star r" id="rStar" aria-label="Did it">⭐</button></div>${ansLine(c)}`);
@@ -509,12 +539,13 @@ function vHome(v){
   const helpN=dueHelp().length;const all=Object.keys(CH);const got=all.filter(id=>M[id]).length;
   v.innerHTML=`
   <section class="sticker hello"><button class="pic ava" id="hiAva" aria-label="Say hi">🕷️</button><h2>Hi! Ready to help Spidey?</h2></section>
+  ${guideHTML("home","How to play",G_HOME)}
   <div class="doors">
     <button class="door adv sticker" id="dAdv"><span class="em">🗺️</span><h2>Adventure</h2><span class="go">▶</span></button>
     <button class="door game sticker" id="dGame" ${ready.length?"":'data-off="1"'}>${helpN?`<span class="pill">💡 ${helpN}</span>`:""}<span class="em">🎮</span><h2>Hero Challenge</h2><span class="go">⭐</span></button>
     <button class="door book sticker" id="dBook"><span class="pill sun">⭐ ${got}/${all.length}</span><span class="em">📖</span><h2>Sticker Book</h2><span class="go">👀</span></button>
   </div>`;
-  $("#hiAva").onclick=()=>speak("Hi! Ready to help Spidey?",{ava:$("#hiAva")});
+  $("#hiAva").onclick=()=>speak("Hi! Ready to help Spidey?",{ava:$("#hiAva")});bindGuide(v,"home",G_HOME);
   $("#dAdv").onclick=()=>{sfx("tap");kidGo("map","Pick an adventure!");};
   $("#dGame").onclick=()=>{sfx("tap");if(!ready.length){speak("Watch an adventure first. Then come back tomorrow for a challenge!");return;}startChallenge();};
   $("#dBook").onclick=()=>{sfx("tap");kidGo("book","Here are your stickers!");};
@@ -541,8 +572,9 @@ function vMap(v){
   const thumb=e=>`<img src="https://i.ytimg.com/vi/${encodeURIComponent(e.videoId)}/mqdefault.jpg" alt="">`;
   v.innerHTML=`<div class="kidbar"><button class="round nav" id="kHome" aria-label="Home">🏠</button>
     <div class="showtabs">${EPS.map(e=>`<button class="showtab" data-ep="${esc(e.id)}" aria-current="${e.id===ep.id}" aria-label="${esc(e.title)}">${thumb(e)}${P.answer?`<span>${esc(e.title)}</span>`:""}</button>`).join("")}</div></div>
+    ${guideHTML("map","How to play: Adventure",EPS.length>1?[...G_MAP,["📺","Tap a show picture at the top to change shows."]]:G_MAP)}
     <section class="sticker map">${html}</section>`;
-  $("#kHome").onclick=()=>goKid();
+  $("#kHome").onclick=()=>goKid();bindGuide(v,"map",EPS.length>1?[...G_MAP,["📺","Tap a show picture at the top to change shows."]]:G_MAP);
   v.querySelectorAll("[data-ep]").forEach(b=>b.onclick=()=>{sfx("tap");S.ep=b.dataset.ep;render();});
   v.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>{sfx("tap");playFromMap(ep,ep.scenes.find(s=>s.id===b.dataset.sc),"map");});
 }
@@ -562,11 +594,13 @@ function vBook(v){
   if(!S.page||!MODULES.find(m=>m.id===S.page))S.page=MODULES[0].id;
   const all=Object.values(CH);const got=all.filter(c=>M[c.id]).length;const cs=all.filter(c=>c.m===S.page);
   v.innerHTML=`<div class="kidbar"><button class="round nav" id="kHome" aria-label="Home">🏠</button><span class="tally">⭐ ${got} / ${all.length}</span></div>
+  ${guideHTML("book","How to play: Sticker Book",G_BOOK)}
   <div class="pages">${MODULES.map(m=>`<button class="page" data-pg="${m.id}" aria-current="${m.id===S.page}" aria-label="${esc(m.title)}">${m.emoji}</button>`).join("")}</div>
   <section class="sticker stks">${cs.map(c=>{const seen=!!M[c.id],k=kind(c.id);return`<button class="stk${seen?"":" unseen"}" data-c="${esc(c.id)}" aria-label="${esc(sayOf(c))}">
     <span class="disc ${seen?"k-"+k:""}"><span class="e">${esc(c.emoji)}</span>${seen&&k==="strong"?'<span class="b">⭐</span>':seen&&H[c.id]?'<span class="b">💡</span>':""}</span>
     ${P.answer?`<span class="t">${esc(sayOf(c))}</span>`:""}</button>`;}).join("")}</section>`;
   $("#kHome").onclick=()=>goKid();
+  bindGuide(v,"book",G_BOOK);
   v.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>{sfx("tap");S.page=b.dataset.pg;render();speak(PAGE_SAY[S.page]||"");});
   v.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{sfx("tap");openSticker(b.dataset.c);});
 }
@@ -575,13 +609,13 @@ function openSticker(id){
   const c=CH[id];const flow=newFlow();STAR=0;openStage("book");
   const srcs=SRC[id]||[];const src=srcs.find(x=>x.ep)||srcs[0]||null;const where=sceneOf(src);
   if(!M[id]){
-    card(`<div class="cbody"><div class="pic" id="sPic" style="filter:grayscale(1);opacity:.4">${esc(c.emoji)}</div>${where?`<div class="pic" style="font-size:64px">👉 ${esc(where.sc.emoji)}</div>`:""}</div>
+    tipped(TIPS.unseen,`<div class="cbody"><div class="pic" id="sPic" style="filter:grayscale(1);opacity:.4">${esc(c.emoji)}</div>${where?`<div class="pic" style="font-size:64px">👉 ${esc(where.sc.emoji)}</div>`:""}</div>
       <div class="cfoot"><button class="round help l" id="sBack" aria-label="Back">📖</button><span></span>${where?`<button class="round go r" id="sGo" aria-label="Watch">▶</button>`:"<span></span>"}</div>`);
     speak(where?"Find me in this adventure!":"Find me in an adventure!",{ava:$("#sPic")});
     $("#sBack").onclick=()=>goBack();const g=$("#sGo");if(g)g.onclick=()=>{sfx("tap");runScene(where.ep,where.sc,flow);};
     return;}
   const hear=()=>{const h=$("#sHint");if(h)h.innerHTML=`<span>${esc(c.move[0])}</span>`;return src?playLine(src,flow):speak(sayOf(c),{ava:$("#sPic")});};
-  const draw=()=>{card(`<div class="cbody"><button class="pic" id="sPic" aria-label="Hear it">${esc(c.emoji)}</button>
+  const draw=()=>{tipped(TIPS.sticker,`<div class="cbody"><button class="pic" id="sPic" aria-label="Hear it">${esc(c.emoji)}</button>
       <div class="hint" id="sHint"></div>
       <div class="acts">
         <button class="round ear" id="sEar" aria-label="Hear it">👂</button>
@@ -600,7 +634,7 @@ function openSticker(id){
 }
 
 async function runScene(ep,sc,flow){
-  card(`<div class="cbody"><div class="pic">${esc(sc.emoji)}</div><h2>${esc(sc.title)}</h2></div><div class="cfoot"><span></span><span></span><button class="round go r" id="sGo" aria-label="Watch">▶</button></div>`);
+  tipped(TIPS.start,`<div class="cbody"><div class="pic">${esc(sc.emoji)}</div><h2>${esc(sc.title)}</h2></div><div class="cfoot"><span></span><span></span><button class="round go r" id="sGo" aria-label="Watch">▶</button></div>`);
   await new Promise(r=>$("#sGo").onclick=()=>{sfx("tap");r();});if(flow!==FLOW)return;
   // build events: known phrases freeze BEFORE the line (recall); new phrases pause AFTER the line (listen)
   const events=[];
@@ -610,12 +644,12 @@ async function runScene(ep,sc,flow){
       else newLines.push({ln,src});}
     if(newLines.length)events.push({t:st.at,type:"listen",lines:newLines,check:st.check,note:st.note,resume:st.at+.05});}
   events.sort((a,b)=>a.t-b.t);
-  card(`<div class="cbody"><div class="pic talking">👀</div></div>`);
+  tipped(TIPS.watch,`<div class="cbody"><div class="pic talking">👀</div></div>`);
   const ok=await playScene(ep,sc.start,sc.end,events,ev=>sceneEvent(ev,flow),flow);
   if(flow!==FLOW||ok===false)return;
   DONE[ep.id+"/"+sc.id]=today();save();celebrate("🏆");
   const nx=nextIn(ep);
-  card(`<div class="cbody"><div class="pic win">🏆</div><div class="stars">${"⭐".repeat(Math.min(STAR,10))}</div>${nx?`<div class="pic" style="font-size:56px">${esc(nx.emoji)}</div>`:""}</div>
+  tipped(TIPS.sceneEnd,`<div class="cbody"><div class="pic win">🏆</div><div class="stars">${"⭐".repeat(Math.min(STAR,10))}</div>${nx?`<div class="pic" style="font-size:56px">${esc(nx.emoji)}</div>`:""}</div>
     <div class="cfoot"><button class="round help l" id="eBack" aria-label="Back">${BACKICON[S.back]||"↩"}</button><span></span>${nx?`<button class="round go r" id="eNext" aria-label="Next adventure">▶</button>`:`<button class="round go r" id="eHome" aria-label="Home">🏠</button>`}</div>`);
   speak(STAR?"Amazing! You helped Spidey!":"Great watching!");
   $("#eBack").onclick=()=>goBack();
@@ -644,7 +678,7 @@ async function freezeAndSpeak(id,flow,o={}){
   const src=srcs.length?srcs[Math.floor(Math.random()*srcs.length)]:null;
   if(M[id]&&M[id].reteach){await listenCard(c,src,flow);if(flow!==FLOW)return;M[id].reteach=false;save();}
   if(src&&src.say){
-    card(`<div class="cbody"><div class="pic talking">👀</div></div>`);
+    tipped(TIPS.watch,`<div class="cbody"><div class="pic talking">👀</div></div>`);
     const base=(src.scStart!=null&&src.scStart<=src.s)?src.scStart:src.s-8;const from=Math.max(base,src.s-8);
     await playRange(src.v,from,src.s-.05,flow);if(flow!==FLOW)return;
   }
@@ -678,7 +712,7 @@ async function startChallenge(){
     if(flow!==FLOW)return;
     if(lvl>=3&&q.counts){queue.splice(Math.min(i+2,queue.length),0,{id:q.id,game:q.game==="freeze"?"hero":"freeze",counts:false});}}
   celebrate("🏆");
-  card(`<div class="cbody"><div class="pic win">🏆</div><div class="stars">${"⭐".repeat(Math.min(STAR,12))}</div></div>
+  tipped(TIPS.challengeEnd,`<div class="cbody"><div class="pic win">🏆</div><div class="stars">${"⭐".repeat(Math.min(STAR,12))}</div></div>
     <div class="cfoot"><span></span><span></span><button class="round go r" id="eHome" aria-label="Home">🏠</button></div>`);
   speak("You are a super hero! Great job!");$("#eHome").onclick=()=>goKid();
 }
@@ -766,6 +800,7 @@ function vSettings(v){
     <label class="switch"><input type="checkbox" id="micT" ${P.mic?"checked":""}> 🎤 Mic reacts when my child speaks (nothing is recorded)</label>
     <label class="switch"><input type="checkbox" id="ansT" ${P.answer?"checked":""}> Show the answer in small print for grown-ups</label>
     <label class="switch"><input type="checkbox" id="zhT" ${P.zh?"checked":""}> Show Chinese hints</label>
+    <label class="switch"><input type="checkbox" id="tipT" ${P.tips!==false?"checked":""}> Show “How to play” help and tips</label>
   </section>
   <div class="lead"><h2>Move progress</h2><p class="note">Progress is saved in this browser. Save a backup to continue on another device.</p></div>
   <section class="sticker form"><div class="row"><button class="btn sm" id="exp">⬇️ Save backup</button><label class="btn sm" for="impFile">⬆️ Load backup</label><input type="file" id="impFile" accept=".json,application/json" hidden></div></section>`;
@@ -774,6 +809,7 @@ function vSettings(v){
   $("#micT").onchange=e=>{P.mic=e.target.checked;save();};
   $("#ansT").onchange=e=>{P.answer=e.target.checked;save();};
   $("#zhT").onchange=e=>{P.zh=e.target.checked;save();};
+  $("#tipT").onchange=e=>{P.tips=e.target.checked;if(P.tips)P.gclosed={};save();};
   $("#exp").onclick=()=>{const blob=new Blob([JSON.stringify({app:"hero-words",v:4,mem:M,help:H,done:DONE,custom:CUSTOM,prefs:P})],{type:"application/json"});
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hero-words-backup-"+today()+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);toast("Backup saved");};
   $("#impFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(d.app!=="hero-words"||d.v<4)throw 0;
